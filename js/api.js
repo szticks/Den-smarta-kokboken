@@ -61,7 +61,13 @@ export async function callApi(action, payload = {}) {
     return result;
   } catch (err) {
     console.error(`API Error on ${action}:`, err);
-    updateSyncStatus('offline');
+
+    // Only a genuine connectivity failure (fetch() couldn't even reach the server)
+    // should flip the header badge to "Offline". A request that reached the server
+    // and failed there (bad response, server-side error) means we're still online -
+    // that failure gets shown in its own context (e.g. the scrape/OCR status box).
+    const isConnectivityError = err.message === 'OFFLINE_MODE' || err instanceof TypeError;
+    updateSyncStatus(isConnectivityError ? 'offline' : 'online');
 
     if (err.message !== 'OFFLINE_MODE' && SYNC_ACTIONS.includes(action)) {
       queueOfflineAction(action, payload);
