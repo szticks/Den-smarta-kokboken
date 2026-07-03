@@ -10,17 +10,6 @@
  * parseIngredientString() återanvänds från Scraper.js (delad namnrymd).
  */
 
-// TEMP: run this manually once from the Apps Script editor (select it in the
-// function dropdown next to Run) to force the Drive-permission consent
-// screen to appear, since it calls Drive.Files.create unconditionally.
-// Safe to delete afterwards - it cleans up its own test file.
-function testDriveAuthorization() {
-  var blob = Utilities.newBlob('test', 'text/plain', 'auth-test.txt');
-  var file = Drive.Files.create({ name: 'Smarta Kokboken - auth test' }, blob);
-  Drive.Files.remove(file.id);
-  Logger.log('Drive authorization OK');
-}
-
 var OCR_SECTION_HEADERS = [
   "ingredienser", "ingredienser:", "tillagning", "tillagning:", "instruktioner",
   "instruktioner:", "gör så här", "gör så här:", "gör såhär", "gör såhär:",
