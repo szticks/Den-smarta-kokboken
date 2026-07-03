@@ -40,7 +40,14 @@ function initializeSpreadsheet() {
   };
 
   // 2. Receptflik
-  createSheetIfMissing("Recipes", ["id", "title", "ingredients", "instructions", "tags", "url", "image", "created_at"]);
+  var recipesSheet = createSheetIfMissing("Recipes", ["id", "title", "ingredients", "instructions", "tags", "url", "image", "created_at", "needs_review"]);
+
+  // Migrera recept-flikar som skapades innan "needs_review"-kolumnen fanns
+  var recipesHeaderRow = recipesSheet.getRange(1, 1, 1, Math.max(recipesSheet.getLastColumn(), 1)).getValues()[0];
+  if (recipesHeaderRow.indexOf("needs_review") === -1) {
+    var newCol = recipesSheet.getLastColumn() + 1;
+    recipesSheet.getRange(1, newCol).setValue("needs_review").setFontWeight("bold").setBackground("#f3f3f3");
+  }
 
   // 3. Veckoplansflik
   var weeklyPlanSheet = ss.getSheetByName("WeeklyPlan");
@@ -107,6 +114,10 @@ function doPost(e) {
 
       case "ocrRecipe":
         result = ocrRecipeFromPhoto(payload.imageBase64, payload.mimeType);
+        break;
+
+      case "uploadRecipeImage":
+        result = uploadRecipeImage(payload.imageBase64, payload.mimeType);
         break;
 
       case "getRecipes":

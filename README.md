@@ -43,7 +43,7 @@ Appen behöver ett kalkylark på ditt Google-konto för att spara recept, veckop
 2. Döp kalkylarket till vad du vill (t.ex. `Smarta Kokboken`).
 3. Klicka på **Tillägg** (Extensions) -> **Apps Script** i toppmenyn.
 4. Radera all eventuell kod som finns i standardfilen (`Code.gs`).
-5. Backend-koden ligger uppdelad i flera filer i mappen `backend/` i detta projekt (`Router.js`, `Recipes.js`, `WeeklyPlan.js`, `Pantry.js`, `ShoppingList.js`, `Scraper.js`, `OcrRecipe.js`). För varje fil i den mappen:
+5. Backend-koden ligger uppdelad i flera filer i mappen `backend/` i detta projekt (`Router.js`, `Recipes.js`, `WeeklyPlan.js`, `Pantry.js`, `ShoppingList.js`, `Scraper.js`, `OcrRecipe.js`, `RecipeImage.js`). För varje fil i den mappen:
    - Klicka på **+** bredvid "Filer" i Apps Script-editorn -> **Skript**.
    - Döp den nya filen till samma namn (t.ex. `Router`).
    - Klistra in innehållet från motsvarande fil i `backend/`.
@@ -106,6 +106,10 @@ Eftersom appen är en Progressive Web App kan du köra den direkt på din telefo
 I **Bibliotek** kan du enkelt klistra in länkar från receptsajter (t.ex. ICA, Köket.se, Tasteline) och klicka på **Skrapa**. Appen läser av ingredienser och steg på en sekund. Du kan även skriva in recept manuellt.
 
 **Fota analoga recept:** I samma formulär (knappen "Nytt recept") finns även **Fota recept** — ta en bild av en kokbokssida eller tidningsurklipp direkt med kameran (eller välj en bild från galleriet). Appen läser av texten via Google Drives OCR och gissar vilka rader som är ingredienser respektive instruktioner. Fungerar bäst på tryckt text; en miniatyr av fotot visas i formuläret så du kan jämföra mot originalet medan du rättar eventuella feltolkningar innan du sparar.
+
+**Behöver granskas / formateras:** Kryssrutan under bild-URL-fältet markeras automatiskt efter en foto-avläsning (texten är ofta lite rå direkt från OCR:en). Kryssa i den manuellt för valfritt recept om du vill putsa det senare på en dator istället för att fixa allt på telefonen direkt. Filtret **"Att granska"** i Bibliotek visar bara de recepten, så du hittar dem snabbt igen.
+
+**Ta bild till receptet:** Kamera-knappen bredvid bild-URL-fältet laddar upp en egen bild (t.ex. av den färdiga rätten, eller en skärmbild om en skrapad bild-URL inte fungerar) till en dedikerad mapp i din Google Drive, och sätter den som receptets bild automatiskt.
 
 ### 2. Veckoplanering ("Tinder-flödet")
 Gå till fliken **Svep** (Tinder). Här kan du snabbt gå igenom dina recept. 

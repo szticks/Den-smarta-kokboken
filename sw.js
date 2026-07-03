@@ -1,4 +1,4 @@
-const CACHE_NAME = 'smarta-kokboken-v1.10';
+const CACHE_NAME = 'smarta-kokboken-v1.11';
 const ASSETS = [
   './',
   './index.html',

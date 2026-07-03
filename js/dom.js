@@ -90,6 +90,11 @@ export function initElements() {
   elements.photoStatus = document.getElementById('photo-status');
   elements.photoPreviewWrapper = document.getElementById('photo-preview-wrapper');
   elements.photoPreviewImg = document.getElementById('photo-preview-img');
+  elements.recipeNeedsReview = document.getElementById('recipe-needs-review');
+  elements.coverPhotoInput = document.getElementById('cover-photo-input');
+  elements.btnCoverPhoto = document.getElementById('btn-cover-photo');
+  elements.coverPhotoSpinner = document.getElementById('cover-photo-spinner');
+  elements.coverPhotoStatus = document.getElementById('cover-photo-status');
 
   // Modal Quick Pantry
   elements.quickPantryGrid = document.getElementById('quick-pantry-grid');

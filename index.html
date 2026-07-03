@@ -155,6 +155,7 @@
           <button class="filter-chip" data-filter-tag="Helgmat">Helg</button>
           <button class="filter-chip" data-filter-tag="Ugn">Ugn</button>
           <button class="filter-chip" data-filter-tag="Gryta/Soppa">Gryta</button>
+          <button class="filter-chip" data-filter-tag="NeedsReview">Att granska</button>
         </div>
 
         <!-- Recipe grid -->
@@ -401,7 +402,22 @@
 
           <div class="form-group">
             <label for="recipe-image-url">Bild-URL (frivillig)</label>
-            <input type="text" id="recipe-image-url" placeholder="https://...">
+            <div class="cover-photo-row">
+              <input type="text" id="recipe-image-url" placeholder="https://...">
+              <button type="button" id="btn-cover-photo" class="btn btn-secondary" title="Ta en egen bild till receptet">
+                <span id="cover-photo-spinner" class="spinner hidden"></span>
+                <i data-lucide="camera"></i>
+              </button>
+              <input type="file" id="cover-photo-input" accept="image/*" capture="environment" class="hidden">
+            </div>
+            <small id="cover-photo-status"></small>
+          </div>
+
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="recipe-needs-review">
+              Behöver granskas/formateras (t.ex. efter foto-avläsning)
+            </label>
           </div>
 
           <div class="form-group">

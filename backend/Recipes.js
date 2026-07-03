@@ -10,6 +10,7 @@ function getRecipes(ss) {
     try { item.ingredients = JSON.parse(item.ingredients); } catch (e) { item.ingredients = []; }
     try { item.instructions = JSON.parse(item.instructions); } catch (e) { item.instructions = []; }
     try { item.tags = JSON.parse(item.tags); } catch (e) { item.tags = []; }
+    item.needsReview = (item.needs_review === true || item.needs_review === "TRUE");
   });
 
   return { success: true, recipes: list };
@@ -38,7 +39,8 @@ function saveRecipe(ss, recipe) {
     tagsStr,
     recipe.url || "",
     recipe.image || "",
-    new Date()
+    new Date(),
+    recipe.needsReview ? "TRUE" : "FALSE"
   ];
 
   if (isNew) {

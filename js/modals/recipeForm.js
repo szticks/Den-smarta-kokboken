@@ -85,6 +85,8 @@ export function initRecipeFormModal() {
       elements.btnPhotoRecipe.disabled = false;
 
       fillFormFromRecipeDraft(result.recipe);
+      // Photo-OCR text is rougher than a link scrape - flag it for a later cleanup pass
+      elements.recipeNeedsReview.checked = true;
 
       if (result.success) {
         elements.photoStatus.className = 'scrape-status success';
@@ -107,6 +109,36 @@ export function initRecipeFormModal() {
 
   elements.photoPreviewImg.addEventListener('click', () => {
     elements.photoPreviewImg.classList.toggle('enlarged');
+  });
+
+  // Take/attach a permanent cover photo for the recipe (separate from the OCR photo above)
+  elements.btnCoverPhoto.addEventListener('click', () => {
+    elements.coverPhotoInput.click();
+  });
+
+  elements.coverPhotoInput.addEventListener('change', async () => {
+    const file = elements.coverPhotoInput.files[0];
+    if (!file) return;
+
+    try {
+      elements.coverPhotoSpinner.classList.remove('hidden');
+      elements.btnCoverPhoto.disabled = true;
+      elements.coverPhotoStatus.innerText = 'Laddar upp bilden...';
+
+      const { base64, mimeType } = await downscaleImageToBase64(file);
+      const result = await callApi('uploadRecipeImage', { imageBase64: base64, mimeType });
+
+      elements.recipeFormImage.value = result.imageUrl;
+      elements.coverPhotoStatus.innerText = 'Bild uppladdad!';
+      showNotification('Bild tillagd till receptet!', 'success');
+    } catch (err) {
+      console.error('Cover photo upload error:', err);
+      elements.coverPhotoStatus.innerText = err.message || 'Misslyckades att ladda upp bilden.';
+    } finally {
+      elements.coverPhotoSpinner.classList.add('hidden');
+      elements.btnCoverPhoto.disabled = false;
+      elements.coverPhotoInput.value = '';
+    }
   });
 
   // Tag Toggle Handlers in Form
@@ -163,7 +195,8 @@ export function initRecipeFormModal() {
       url,
       tags: activeTags,
       ingredients,
-      instructions
+      instructions,
+      needsReview: elements.recipeNeedsReview.checked
     };
 
     elements.modalRecipeForm.classList.add('hidden');
@@ -203,6 +236,7 @@ export function openRecipeForm(recipe = null) {
     elements.recipeFormHeading.innerText = 'Redigera recept';
     elements.recipeFormId.value = recipe.id;
     fillFormFromRecipeDraft(recipe);
+    elements.recipeNeedsReview.checked = !!recipe.needsReview;
   } else {
     elements.recipeFormHeading.innerText = 'Lägg till nytt recept';
   }
@@ -221,6 +255,9 @@ function resetRecipeForm() {
   elements.photoStatus.innerText = '';
   elements.photoPreviewWrapper.classList.add('hidden');
   elements.photoPreviewImg.src = '';
+  elements.recipeNeedsReview.checked = false;
+  elements.coverPhotoInput.value = '';
+  elements.coverPhotoStatus.innerText = '';
 
   // Reset tag selection active states
   document.querySelectorAll('.tag-btn').forEach(btn => btn.classList.remove('active'));

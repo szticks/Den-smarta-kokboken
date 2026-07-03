@@ -32,8 +32,9 @@ export function renderLibrary() {
     const matchesSearch = recipe.title.toLowerCase().includes(searchQuery) ||
       recipe.ingredients.some(ing => ing.name.toLowerCase().includes(searchQuery));
 
-    // Tagg filter
-    const matchesTag = (activeLibraryTag === 'All') || recipe.tags.includes(activeLibraryTag);
+    // Tagg filter ("Att granska" är en flagga, inte en riktig tagg)
+    const matchesTag = activeLibraryTag === 'All'
+      || (activeLibraryTag === 'NeedsReview' ? recipe.needsReview : recipe.tags.includes(activeLibraryTag));
 
     return matchesSearch && matchesTag;
   });
