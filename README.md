@@ -23,6 +23,16 @@ backend/               Google Apps Script-backend, uppdelad per domän (se Steg 
 manifest.json, sw.js   PWA-manifest och service worker
 ```
 
+### Automatisk driftsättning av backend
+
+`backend/`-mappen driftsätts numera automatiskt till Apps Script via [clasp](https://github.com/google/clasp) + GitHub Actions ([.github/workflows/deploy-backend.yml](.github/workflows/deploy-backend.yml)) varje gång något i `backend/` pushas till `main` — inget manuellt kopiera-klistra i webbeditorn behövs längre för framtida ändringar.
+
+Engångsuppsättning (redan gjord för detta repo, men bra att veta):
+1. `npm install -g @google/clasp` och `clasp login` lokalt (kräver att Apps Script API är påslaget på `https://script.google.com/home/usersettings`).
+2. `.clasp.json` i projektroten pekar ut `scriptId` och `rootDir: "backend"`.
+3. Innehållet i den lokala `~/.clasprc.json` (skapas av `clasp login`) sparas som GitHub-hemligheten `CLASPRC_JSON` (`gh secret set CLASPRC_JSON < ~/.clasprc.json`), så GitHub Actions kan autentisera utan att någon känslig nyckel syns i koden.
+4. Workflow-filen kör `clasp push` + `clasp deploy --deploymentId <ID på den riktiga distributionen>` vid varje push, vilket uppdaterar samma Webbapps-URL du redan har sparad i appen — ingen ny URL, ingen ny inloggning krävs i appen.
+
 ---
 
 ## Steg 1: Ställ in Google Sheets (Din Databas)
