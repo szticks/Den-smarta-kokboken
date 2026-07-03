@@ -20,7 +20,10 @@ function uploadRecipeImage(imageBase64, mimeType) {
     var file = folder.createFile(blob);
     file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
 
-    var imageUrl = "https://drive.google.com/uc?export=view&id=" + file.getId();
+    // drive.google.com/uc?export=view often shows a virus-scan warning page
+    // instead of the raw image for some files, which breaks <img> rendering.
+    // This googleusercontent.com host reliably serves the actual image bytes.
+    var imageUrl = "https://lh3.googleusercontent.com/d/" + file.getId();
 
     return { success: true, imageUrl: imageUrl };
   } catch (e) {
