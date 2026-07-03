@@ -1,0 +1,22 @@
+{
+  "name": "Smarta Kokboken",
+  "short_name": "Kokboken",
+  "description": "Den smarta, privata och kostnadseffektiva matplaneraren för din familj.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0f1012",
+  "theme_color": "#0f1012",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}

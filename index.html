@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Smarta Kokboken - Din digitala matplanerare</title>
+  
+  <!-- SEO & PWA Meta -->
+  <meta name="description" content="En smart, privat och kostnadseffektiv matplanerare med Google Sheets som motor och Tinder-flöde för snabb veckoplanering.">
+  <meta name="theme-color" content="#0f1012">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- QR Code generator CDN (used to link new devices without manual typing) -->
+  <script src="https://unpkg.com/qrcode@1.4.4/build/qrcode.min.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- App Wrapper -->
+  <div id="app-container" class="app-container">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-logo">
+        <i data-lucide="cooking-pot" class="logo-icon"></i>
+        <h1>Smarta Kokboken</h1>
+      </div>
+      <div class="header-status">
+        <span id="sync-status" class="sync-status status-offline" title="Synk-status">
+          <i data-lucide="cloud-off"></i> Offline
+        </span>
+      </div>
+    </header>
+
+    <!-- Main Content Area (Views) -->
+    <main class="main-content">
+      
+      <!-- 1. DASHBOARD VIEW -->
+      <section id="view-dashboard" class="app-view active">
+        <div class="view-header">
+          <h2>Veckans Matsedel</h2>
+          <p class="subtitle">Planera din vecka lekfullt</p>
+        </div>
+
+        <!-- Randomize entire week -->
+        <div class="randomize-week-section">
+          <select id="randomize-week-context" class="select-filter">
+            <option value="All">Alla recept (Barn/Vuxen)</option>
+            <option value="Barnvänligt">Barnvecka</option>
+            <option value="Båda">Vuxen/Båda</option>
+          </select>
+          <button id="btn-randomize-week" class="btn btn-primary btn-full">
+            <i data-lucide="dices"></i> Slumpa hela veckan
+          </button>
+        </div>
+
+        <!-- Day cards list -->
+        <div id="weekly-plan-list" class="weekly-plan-list">
+          <!-- Rendered dynamically in app.js -->
+        </div>
+
+        <!-- Quick Pantry Out Button -->
+        <div class="quick-pantry-section">
+          <h3>Skafferi-snabblänk</h3>
+          <button id="btn-quick-pantry" class="btn btn-secondary btn-full">
+            <i data-lucide="alert-triangle"></i> Slut i skafferiet? Flagga basvara
+          </button>
+        </div>
+      </section>
+
+      <!-- 2. TINDER SWIPE VIEW -->
+      <section id="view-tinder" class="app-view">
+        <div class="view-header">
+          <h2>Tinder-planering</h2>
+          <p class="subtitle">Svep höger för att planera, vänster för att hoppa över</p>
+        </div>
+
+        <!-- Filters for swiping -->
+        <div class="tinder-filters">
+          <select id="filter-tinder-context" class="select-filter">
+            <option value="All">Alla veckor (Barn/Vuxen)</option>
+            <option value="Barnvänligt">Barnvecka</option>
+            <option value="Båda">Vuxen/Båda</option>
+          </select>
+          <select id="filter-tinder-tag" class="select-filter">
+            <option value="All">Alla kategorier</option>
+            <option value="Vardagsmat">Vardagsmat</option>
+            <option value="Helgmat">Helgmat</option>
+            <option value="Gryta/Soppa">Gryta/Soppa</option>
+            <option value="Ugn">Ugn</option>
+            <option value="Steka/Koka">Steka/Koka</option>
+          </select>
+        </div>
+
+        <!-- Tinder Card Area -->
+        <div class="tinder-card-container">
+          <div id="tinder-card-wrapper" class="tinder-card-wrapper">
+            <!-- Cards rendered dynamically -->
+            <div class="tinder-empty-state">
+              <i data-lucide="sparkles" class="empty-icon"></i>
+              <p>Hittade inga recept som matchar filtret. Lägg till fler recept i biblioteket!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Swipe controls -->
+        <div class="tinder-controls">
+          <button id="tinder-btn-dislike" class="tinder-btn dislike-btn" title="Hoppa över (Svep Vänster)">
+            <i data-lucide="x"></i>
+          </button>
+          <button id="tinder-btn-info" class="tinder-btn info-btn" title="Visa detaljer">
+            <i data-lucide="info"></i>
+          </button>
+          <button id="tinder-btn-like" class="tinder-btn like-btn" title="Planera recept (Svep Höger)">
+            <i data-lucide="heart"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- 3. RECIPE LIBRARY VIEW -->
+      <section id="view-library" class="app-view">
+        <div class="view-header-row">
+          <div>
+            <h2>Receptbibliotek</h2>
+            <p id="recipe-count" class="subtitle">0 sparade recept</p>
+          </div>
+          <button id="btn-add-recipe-open" class="btn btn-primary">
+            <i data-lucide="plus"></i> Nytt recept
+          </button>
+        </div>
+
+        <!-- Search and filters -->
+        <div class="search-bar-container">
+          <div class="search-input-wrapper">
+            <i data-lucide="search" class="search-icon"></i>
+            <input type="text" id="library-search" placeholder="Sök efter recept eller ingrediens...">
+          </div>
+        </div>
+        
+        <div class="library-filters">
+          <button class="filter-chip active" data-filter-tag="All">Alla</button>
+          <button class="filter-chip" data-filter-tag="Barnvänligt">Barnvänligt</button>
+          <button class="filter-chip" data-filter-tag="Vardagsmat">Vardag</button>
+          <button class="filter-chip" data-filter-tag="Helgmat">Helg</button>
+          <button class="filter-chip" data-filter-tag="Ugn">Ugn</button>
+          <button class="filter-chip" data-filter-tag="Gryta/Soppa">Gryta</button>
+        </div>
+
+        <!-- Recipe grid -->
+        <div id="recipe-grid" class="recipe-grid">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- 4. SHOPPING LIST VIEW -->
+      <section id="view-shopping" class="app-view">
+        <div class="view-header-row">
+          <div>
+            <h2>Inköpslista</h2>
+            <p class="subtitle">Aggregerad och rensad från basvaror</p>
+          </div>
+          <div class="shopping-actions">
+            <button id="btn-complete-shopping" class="btn btn-success" title="Markera inköpsrundan som klar">
+              <i data-lucide="check-circle2"></i> Slutför
+            </button>
+          </div>
+        </div>
+
+        <!-- Shopping List Content -->
+        <div class="shopping-content">
+          <!-- Quick Pantry Out Button -->
+          <div class="shopping-quick-pantry">
+            <button id="btn-quick-pantry-shopping" class="btn btn-secondary btn-full">
+              <i data-lucide="alert-triangle"></i> Slut i skafferiet? Flagga basvara
+            </button>
+          </div>
+
+          <!-- Toggle baseline items -->
+          <div class="toggle-baseline-wrapper">
+            <label class="switch-label">
+              <input type="checkbox" id="toggle-hide-baseline" checked>
+              <span class="slider"></span>
+              Göm basvaror som inte är slut
+            </label>
+          </div>
+
+          <div id="shopping-list-wrapper" class="shopping-list-wrapper">
+            <!-- Aggregated list rendered dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. SETTINGS VIEW -->
+      <section id="view-settings" class="app-view">
+        <div class="view-header">
+          <h2>Inställningar</h2>
+          <p class="subtitle">Konfigurera din Google-anslutning</p>
+        </div>
+
+        <div class="settings-card glass-panel">
+          <form id="settings-form" class="settings-form">
+            <div class="form-group">
+              <label for="settings-app-url">Google Apps Script Web App URL</label>
+              <input type="url" id="settings-app-url" placeholder="https://script.google.com/macros/s/.../exec" required>
+              <small>Hitta denna under Distribuera -> Ny distribution i ditt Apps Script.</small>
+            </div>
+            
+            <div class="form-group">
+              <label for="settings-api-key">API-nyckel (Token)</label>
+              <input type="text" id="settings-api-key" placeholder="Kopiera nyckeln från fliken 'Settings' i ditt Sheet" required>
+              <small>Denna skapas automatiskt i ditt ark efter första anropet.</small>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" id="btn-test-connection" class="btn btn-secondary">
+                <i data-lucide="refresh-cw"></i> Testa koppling
+              </button>
+              <button type="submit" class="btn btn-primary">
+                <i data-lucide="save"></i> Spara inställningar
+              </button>
+            </div>
+          </form>
+          
+          <div id="connection-status-msg" class="connection-status-msg hidden"></div>
+        </div>
+
+        <div class="settings-card glass-panel mt-4">
+          <h3>Koppla en ny enhet med QR-kod</h3>
+          <p class="subtitle">Skanna med kameran på en annan telefon/surfplatta för att koppla den till samma Google Sheet, utan att skriva in URL och nyckel manuellt.</p>
+          <button type="button" id="btn-show-qr" class="btn btn-secondary">
+            <i data-lucide="qr-code"></i> Visa QR-kod
+          </button>
+          <div id="qr-code-wrapper" class="qr-code-wrapper hidden">
+            <canvas id="qr-code-canvas"></canvas>
+          </div>
+        </div>
+
+        <div class="settings-card glass-panel mt-4">
+          <h3>Basvarulista</h3>
+          <p class="subtitle">Dessa varor döljs automatiskt på inköpslistan såvida de inte flaggas som "Slut i skafferiet". Separera med kommatecken.</p>
+          <div class="form-group">
+            <textarea id="settings-baseline-items" rows="5"></textarea>
+          </div>
+          <button id="btn-save-baseline" class="btn btn-secondary">Spara basvarulista</button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="app-nav">
+      <button class="nav-item active" data-target-view="view-dashboard" id="nav-btn-dashboard">
+        <i data-lucide="layout-dashboard"></i>
+        <span>Översikt</span>
+      </button>
+      <button class="nav-item" data-target-view="view-tinder" id="nav-btn-tinder">
+        <i data-lucide="shuffle"></i>
+        <span>Svep</span>
+      </button>
+      <button class="nav-item" data-target-view="view-library" id="nav-btn-library">
+        <i data-lucide="book-open"></i>
+        <span>Bibliotek</span>
+      </button>
+      <button class="nav-item" data-target-view="view-shopping" id="nav-btn-shopping">
+        <i data-lucide="shopping-cart"></i>
+        <span class="nav-badge hidden" id="shopping-badge">0</span>
+        <span>Inköp</span>
+      </button>
+      <button class="nav-item" data-target-view="view-settings" id="nav-btn-settings">
+        <i data-lucide="settings"></i>
+        <span>Inställningar</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- A. RECIPE DETAIL / SWIPE DAY CHOOSER MODAL -->
+  <div id="modal-recipe-detail" class="modal-overlay hidden">
+    <div class="modal-container glass-panel">
+      <div class="modal-header">
+        <h3 id="modal-recipe-title">Receptdetaljer</h3>
+        <button class="modal-close" id="btn-close-recipe-detail"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div id="modal-recipe-image-container" class="modal-recipe-image-container">
+          <img id="modal-recipe-image" src="" alt="Receptbild" class="hidden">
+        </div>
+        <div id="modal-recipe-tags" class="modal-tags"></div>
+        
+        <div class="modal-section">
+          <h4>Ingredienser</h4>
+          <ul id="modal-recipe-ingredients" class="detail-list"></ul>
+        </div>
+        
+        <div class="modal-section">
+          <h4>Instruktioner</h4>
+          <ol id="modal-recipe-instructions" class="detail-list steps"></ol>
+        </div>
+        
+        <div id="modal-recipe-url-wrapper" class="modal-section hidden">
+          <h4>Källa</h4>
+          <a id="modal-recipe-url" href="" target="_blank" rel="noopener">Visa originalreceptet <i data-lucide="external-link"></i></a>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-plan-this-recipe" class="btn btn-primary btn-full">
+          <i data-lucide="calendar"></i> Lägg till i veckoplanen...
+        </button>
+        <button id="btn-edit-recipe" class="btn btn-secondary">
+          <i data-lucide="pencil"></i> Redigera
+        </button>
+        <button id="btn-delete-recipe" class="btn btn-danger">
+          <i data-lucide="trash-2"></i> Radera recept
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- B. DAY CHOOSER DROPDOWN MODAL -->
+  <div id="modal-day-chooser" class="modal-overlay hidden">
+    <div class="modal-container modal-small glass-panel">
+      <div class="modal-header">
+        <h3>Välj dag</h3>
+        <button class="modal-close" id="btn-close-day-chooser"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <p>Vilken dag vill du äta <strong id="day-chooser-recipe-name">receptet</strong>?</p>
+        <div class="day-buttons-grid">
+          <button class="btn btn-day" data-day-idx="0">Måndag</button>
+          <button class="btn btn-day" data-day-idx="1">Tisdag</button>
+          <button class="btn btn-day" data-day-idx="2">Onsdag</button>
+          <button class="btn btn-day" data-day-idx="3">Torsdag</button>
+          <button class="btn btn-day" data-day-idx="4">Fredag</button>
+          <button class="btn btn-day" data-day-idx="5">Lördag</button>
+          <button class="btn btn-day" data-day-idx="6">Söndag</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C. ADD / EDIT RECIPE MODAL -->
+  <div id="modal-recipe-form" class="modal-overlay hidden">
+    <div class="modal-container glass-panel">
+      <div class="modal-header">
+        <h3 id="recipe-form-title">Lägg till nytt recept</h3>
+        <button class="modal-close" id="btn-close-recipe-form"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Scraper box -->
+        <div class="scraper-box">
+          <h4>Skrapa från länk (Automatiskt)</h4>
+          <div class="scraper-input-row">
+            <input type="url" id="scrape-url-input" placeholder="Klistra in länk (t.ex. Köket, ICA, Tasteline)...">
+            <button type="button" id="btn-scrape-url" class="btn btn-secondary">
+              <span id="scrape-spinner" class="spinner hidden"></span> Skrapa
+            </button>
+          </div>
+          <div id="scrape-status" class="scrape-status"></div>
+        </div>
+
+        <!-- Photo OCR box -->
+        <div class="scraper-box">
+          <h4>Fota recept (Automatiskt)</h4>
+          <div class="scraper-input-row">
+            <button type="button" id="btn-photo-recipe" class="btn btn-secondary btn-full">
+              <span id="photo-spinner" class="spinner hidden"></span>
+              <i data-lucide="camera"></i> Fota eller välj bild
+            </button>
+            <input type="file" id="photo-recipe-input" accept="image/*" capture="environment" class="hidden">
+          </div>
+          <div id="photo-status" class="scrape-status"></div>
+          <div id="photo-preview-wrapper" class="photo-preview-wrapper hidden">
+            <img id="photo-preview-img" src="" alt="Fotograferat recept" class="photo-preview-thumb">
+          </div>
+        </div>
+
+        <hr class="modal-divider">
+
+        <!-- Manual form -->
+        <form id="recipe-editor-form">
+          <input type="hidden" id="recipe-id">
+          
+          <div class="form-group">
+            <label for="recipe-title">Receptets namn *</label>
+            <input type="text" id="recipe-title" required placeholder="T.ex. Krämig Laxpasta">
+          </div>
+
+          <div class="form-group">
+            <label for="recipe-image-url">Bild-URL (frivillig)</label>
+            <input type="text" id="recipe-image-url" placeholder="https://...">
+          </div>
+
+          <div class="form-group">
+            <label>Taggar (klicka för att välja)</label>
+            
+            <div class="tag-selector-group">
+              <span class="tag-title">Barn/Vuxen:</span>
+              <div class="tag-row" id="form-tags-context">
+                <span class="tag-btn" data-tag="Barnvänligt">Barnvänligt</span>
+                <span class="tag-btn" data-tag="Båda">Båda</span>
+              </div>
+            </div>
+
+            <div class="tag-selector-group">
+              <span class="tag-title">Typ:</span>
+              <div class="tag-row" id="form-tags-type">
+                <span class="tag-btn" data-tag="Vardagsmat">Vardagsmat</span>
+                <span class="tag-btn" data-tag="Helgmat">Helgmat</span>
+              </div>
+            </div>
+
+            <div class="tag-selector-group">
+              <span class="tag-title">Metod:</span>
+              <div class="tag-row" id="form-tags-method">
+                <span class="tag-btn" data-tag="Gryta/Soppa">Gryta/Soppa</span>
+                <span class="tag-btn" data-tag="Ugn">Ugn</span>
+                <span class="tag-btn" data-tag="Steka/Koka">Steka/Koka</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="recipe-ingredients-text">Ingredienser (en per rad) *</label>
+            <textarea id="recipe-ingredients-text" rows="8" required placeholder="T.ex.&#10;500 g lax&#10;4 port pasta&#10;2.5 dl grädde&#10;1 st citron"></textarea>
+            <small>Format: "Mängd Enhet Ingrediensnamn" (t.ex. "3 dl ris", "1 tsk salt")</small>
+          </div>
+
+          <div class="form-group">
+            <label for="recipe-instructions-text">Instruktioner (en per rad) *</label>
+            <textarea id="recipe-instructions-text" rows="6" required placeholder="T.ex.&#10;Koka pastan enligt förpackningen.&#10;Tärna laxen och stek den i smör.&#10;Häll på grädde och pressad citron."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="recipe-url-ref">Original-URL (referens)</label>
+            <input type="url" id="recipe-url-ref" placeholder="https://...">
+          </div>
+
+          <div class="form-actions">
+            <button type="button" id="btn-cancel-recipe-form" class="btn btn-secondary">Avbryt</button>
+            <button type="submit" class="btn btn-primary">Spara recept</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- D. QUICK PANTRY DRAWER / MODAL -->
+  <div id="modal-quick-pantry" class="modal-overlay hidden">
+    <div class="modal-container modal-small glass-panel">
+      <div class="modal-header">
+        <h3>Slut i skafferiet?</h3>
+        <button class="modal-close" id="btn-close-quick-pantry"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="subtitle">Välj basvaror att lägga till på inköpslistan direkt:</p>
+        
+        <div id="quick-pantry-grid" class="quick-pantry-grid">
+          <!-- Baseline items loaded dynamically -->
+        </div>
+
+        <hr class="modal-divider">
+
+        <div class="add-custom-item-row">
+          <input type="text" id="custom-pantry-item-input" placeholder="Annan basvara (t.ex. Kaffe)...">
+          <button id="btn-add-custom-pantry" class="btn btn-primary">Lägg till</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="js/main.js"></script>
+  
+  <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('Service Worker registrerad!', reg.scope))
+          .catch(err => console.log('Service Worker registrering misslyckades:', err));
+      });
+    }
+  </script>
+</body>
+</html>
