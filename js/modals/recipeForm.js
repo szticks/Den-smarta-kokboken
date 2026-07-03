@@ -53,7 +53,7 @@ export function initRecipeFormModal() {
       console.error('Scraping error:', err);
       elements.scrapeSpinner.classList.add('hidden');
       elements.btnScrapeUrl.disabled = false;
-      showScrapeError('Misslyckades att ansluta till skrapningsmotorn.');
+      showScrapeError(err.message || 'Misslyckades att ansluta till skrapningsmotorn.');
     }
   });
 
@@ -99,7 +99,7 @@ export function initRecipeFormModal() {
       elements.photoSpinner.classList.add('hidden');
       elements.btnPhotoRecipe.disabled = false;
       elements.photoStatus.className = 'scrape-status error';
-      elements.photoStatus.innerText = 'Misslyckades att läsa av fotot.';
+      elements.photoStatus.innerText = err.message || 'Misslyckades att läsa av fotot.';
     } finally {
       elements.photoRecipeInput.value = ''; // allow re-selecting the same file again
     }

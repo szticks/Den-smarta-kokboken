@@ -13,6 +13,12 @@ const SYNC_ACTIONS = [
   'clearPantryFlags', 'updateShoppingListItem', 'clearShoppingListState'
 ];
 
+// Actions that intentionally return { success: false, message, ... } as a normal,
+// inspectable result (e.g. "couldn't find a recipe on this page") rather than a
+// technical failure - the caller checks result.success itself, so callApi must not
+// convert this into a thrown error (that would discard the real message).
+const SOFT_FAILURE_ACTIONS = ['scrapeRecipe', 'ocrRecipe'];
+
 export async function callApi(action, payload = {}) {
   if (!isConfigured()) {
     throw new Error('Google Apps Script anslutning är inte konfigurerad.');
@@ -47,8 +53,8 @@ export async function callApi(action, payload = {}) {
     }
 
     const result = await response.json();
-    if (result.success === false) {
-      throw new Error(result.error || 'Okänt serverfel');
+    if (result.success === false && !SOFT_FAILURE_ACTIONS.includes(action)) {
+      throw new Error(result.error || result.message || 'Okänt serverfel');
     }
 
     updateSyncStatus('online');
