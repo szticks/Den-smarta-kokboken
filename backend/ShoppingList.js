@@ -1,6 +1,42 @@
 /**
- * Domän: ShoppingListState-fliken (avbockningar).
+ * Domän: ShoppingListState-fliken (avbockningar) och ShoppingListItems-fliken
+ * (den aktiva, byggda inköpslistan - genereras medvetet via "Bygg inköpslista",
+ * inte automatiskt live från veckoplanen).
  */
+
+function getShoppingListItems(ss) {
+  var sheet = ss.getSheetByName("ShoppingListItems");
+  var list = sheetToObjects(sheet);
+
+  var items = list.map(function(item) {
+    return { name: item.item_name, quantityText: item.quantity_text || "" };
+  });
+
+  return { success: true, items: items };
+}
+
+function generateShoppingList(ss, items) {
+  var sheet = ss.getSheetByName("ShoppingListItems");
+  var lastRow = sheet.getLastRow();
+  if (lastRow > 1) {
+    sheet.deleteRows(2, lastRow - 1);
+  }
+
+  (items || []).forEach(function(item) {
+    sheet.appendRow([item.name, item.quantityText || ""]);
+  });
+
+  return { success: true };
+}
+
+function clearShoppingListItems(ss) {
+  var sheet = ss.getSheetByName("ShoppingListItems");
+  var lastRow = sheet.getLastRow();
+  if (lastRow > 1) {
+    sheet.deleteRows(2, lastRow - 1);
+  }
+  return { success: true };
+}
 
 function getShoppingListState(ss) {
   var sheet = ss.getSheetByName("ShoppingListState");

@@ -33,9 +33,15 @@ export function initElements() {
 
   // Shopping List
   elements.shoppingListWrapper = document.getElementById('shopping-list-wrapper');
-  elements.toggleHideBaseline = document.getElementById('toggle-hide-baseline');
   elements.btnCompleteShopping = document.getElementById('btn-complete-shopping');
   elements.shoppingBadge = document.getElementById('shopping-badge');
+  elements.btnBuildShoppingList = document.getElementById('btn-build-shopping-list');
+
+  // Shopping List Builder Modal
+  elements.modalShoppingBuilder = document.getElementById('modal-shopping-builder');
+  elements.shoppingBuilderList = document.getElementById('shopping-builder-list');
+  elements.btnCloseShoppingBuilder = document.getElementById('btn-close-shopping-builder');
+  elements.btnConfirmShoppingList = document.getElementById('btn-confirm-shopping-list');
 
   // Settings
   elements.settingsForm = document.getElementById('settings-form');

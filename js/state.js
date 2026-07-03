@@ -6,6 +6,7 @@ export const state = {
   weeklyPlan: [],
   pantryFlags: [],
   shoppingListChecked: {},
+  shoppingListItems: [], // the active, deliberately-built shopping list (see "Bygg inköpslista")
   baselineItems: [],
   config: {
     webAppUrl: '',

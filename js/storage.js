@@ -32,6 +32,7 @@ export function loadLocalConfig() {
   state.weeklyPlan = JSON.parse(localStorage.getItem('cache_weekly_plan') || '[]');
   state.pantryFlags = JSON.parse(localStorage.getItem('cache_pantry_flags') || '[]');
   state.shoppingListChecked = JSON.parse(localStorage.getItem('cache_shopping_checked') || '{}');
+  state.shoppingListItems = JSON.parse(localStorage.getItem('cache_shopping_items') || '[]');
   state.offlineQueue = JSON.parse(localStorage.getItem('offline_queue') || '[]');
 }
 

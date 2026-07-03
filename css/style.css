@@ -1074,10 +1074,24 @@ input:checked + .slider::before {
   background-color: #fff;
 }
 
-.shopping-list-wrapper {
+.shopping-list-wrapper,
+.shopping-builder-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.shopping-builder-list {
+  max-height: 50vh;
+  overflow-y: auto;
+  margin-top: 12px;
+}
+
+.shopping-item-needs-review-icon {
+  color: var(--color-accent-orange);
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 }
 
 .shopping-item {

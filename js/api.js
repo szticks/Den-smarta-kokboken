@@ -164,6 +164,10 @@ export async function fetchData() {
     state.shoppingListChecked = shoppingListStateResult.checkedItems || {};
     localStorage.setItem('cache_shopping_checked', JSON.stringify(state.shoppingListChecked));
 
+    const shoppingListItemsResult = await callApi('getShoppingListItems');
+    state.shoppingListItems = shoppingListItemsResult.items || [];
+    localStorage.setItem('cache_shopping_items', JSON.stringify(state.shoppingListItems));
+
     // Refresh current view
     switchView(state.currentView);
     updateShoppingBadge();

@@ -66,6 +66,9 @@ function initializeSpreadsheet() {
 
   // 5. Inköpslistans tillstånd
   createSheetIfMissing("ShoppingListState", ["item_name", "checked", "quantity_text"]);
+
+  // 6. Den aktiva, byggda inköpslistan (genereras medvetet, inte automatiskt live)
+  createSheetIfMissing("ShoppingListItems", ["item_name", "quantity_text"]);
 }
 
 function generateToken(length) {
@@ -162,6 +165,18 @@ function doPost(e) {
 
       case "clearShoppingListState":
         result = clearShoppingListState(ss);
+        break;
+
+      case "getShoppingListItems":
+        result = getShoppingListItems(ss);
+        break;
+
+      case "generateShoppingList":
+        result = generateShoppingList(ss, payload.items);
+        break;
+
+      case "clearShoppingListItems":
+        result = clearShoppingListItems(ss);
         break;
 
       default:

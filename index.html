@@ -169,7 +169,7 @@
         <div class="view-header-row">
           <div>
             <h2>Inköpslista</h2>
-            <p class="subtitle">Aggregerad och rensad från basvaror</p>
+            <p class="subtitle">Byggd från veckans planerade recept</p>
           </div>
           <div class="shopping-actions">
             <button id="btn-complete-shopping" class="btn btn-success" title="Markera inköpsrundan som klar">
@@ -180,20 +180,18 @@
 
         <!-- Shopping List Content -->
         <div class="shopping-content">
+          <!-- Build/refresh the active shopping list from the weekly plan -->
+          <div class="shopping-quick-pantry">
+            <button id="btn-build-shopping-list" class="btn btn-primary btn-full">
+              <i data-lucide="refresh-cw"></i> Bygg inköpslista från veckoplanen
+            </button>
+          </div>
+
           <!-- Quick Pantry Out Button -->
           <div class="shopping-quick-pantry">
             <button id="btn-quick-pantry-shopping" class="btn btn-secondary btn-full">
               <i data-lucide="alert-triangle"></i> Slut i skafferiet? Flagga basvara
             </button>
-          </div>
-
-          <!-- Toggle baseline items -->
-          <div class="toggle-baseline-wrapper">
-            <label class="switch-label">
-              <input type="checkbox" id="toggle-hide-baseline" checked>
-              <span class="slider"></span>
-              Göm basvaror som inte är slut
-            </label>
           </div>
 
           <div id="shopping-list-wrapper" class="shopping-list-wrapper">
@@ -495,6 +493,25 @@
           <input type="text" id="custom-pantry-item-input" placeholder="Annan basvara (t.ex. Kaffe)...">
           <button id="btn-add-custom-pantry" class="btn btn-primary">Lägg till</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- E. SHOPPING LIST BUILDER MODAL -->
+  <div id="modal-shopping-builder" class="modal-overlay hidden">
+    <div class="modal-container glass-panel">
+      <div class="modal-header">
+        <h3>Bygg inköpslista</h3>
+        <button class="modal-close" id="btn-close-shopping-builder"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="subtitle">Bocka ur sådant du redan har hemma innan du skapar listan. Recept märkta med <i data-lucide="alert-triangle" style="width:14px;height:14px;vertical-align:-2px;"></i> behöver granskas och kan ha felaktiga rader.</p>
+        <div id="shopping-builder-list" class="shopping-builder-list">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-confirm-shopping-list" class="btn btn-primary btn-full">Skapa lista</button>
       </div>
     </div>
   </div>

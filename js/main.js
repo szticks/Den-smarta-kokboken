@@ -18,6 +18,7 @@ import { initRecipeDetailModal } from './modals/recipeDetail.js';
 import { initRecipeFormModal } from './modals/recipeForm.js';
 import { initDayChooserModal } from './modals/dayChooser.js';
 import { initQuickPantryModal } from './modals/quickPantry.js';
+import { initShoppingBuilderModal } from './modals/shoppingBuilder.js';
 
 // Populate elements and load config immediately, mirroring the previous
 // single-file boot order (this script is loaded at the bottom of index.html).
@@ -34,6 +35,7 @@ initRecipeDetailModal();
 initRecipeFormModal();
 initDayChooserModal();
 initQuickPantryModal();
+initShoppingBuilderModal();
 
 function setupNavigation() {
   elements.navItems.forEach(item => {

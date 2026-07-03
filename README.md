@@ -118,9 +118,11 @@ Gå till fliken **Svep** (Tinder). Här kan du snabbt gå igenom dina recept.
 - Du kan även slumpa eller ändra enskilda dagar direkt från **Översikt**-sidan genom att klicka på snurrikonen.
 
 ### 3. Inköp i Butiken (Mobil)
-Fliken **Inköp** slår ihop alla ingredienser från veckans planerade rätter.
-- Basvaror (t.ex. salt, olja, socker) döljs automatiskt för att hålla listan ren.
-- Har en basvara tagit slut? Tryck på **Slut i skafferiet** på Översiktssidan och klicka på varan (t.ex. Olivolja) så dyker den upp på inköpslistan direkt.
+Inköpslistan skapas **medvetet**, inte automatiskt live från veckoplanen — det gör att ett recept som råkar vara dåligt formaterat (t.ex. direkt efter foto-avläsning) inte kan smyga in konstiga rader utan att du märker det.
+- Klicka **"Bygg inköpslista från veckoplanen"** i fliken **Inköp** när veckans recept är planerade.
+- En granskningslista visas med alla ingredienser, förikryssade (basvaror är förikryssade **ur**). Recept märkta "Behöver granskas" visas med en varningsikon på sina rader.
+- Bocka **ur** sådant du redan har hemma, klicka sedan **"Skapa lista"** — bara de ikryssade raderna blir den faktiska listan.
+- Har en basvara tagit slut efteråt? Tryck på **Slut i skafferiet** och klicka på varan (t.ex. Olivolja) så dyker den upp på listan direkt, utan att du behöver bygga om hela listan.
 - I butiken bockar du av varor i realtid. Avbockade varor stryks över direkt.
 - Om du tappar täckningen i butiken sparas alla ändringar lokalt i telefonen och synkas automatiskt tillbaka till Google Sheets så fort du får täckning igen.
-- När inköpsrundan är klar, klicka på **Slutför**. Då nollställs skafferiflaggorna och avbockningarna inför nästa vecka.
+- När inköpsrundan är klar, klicka på **Slutför**. Då nollställs skafferiflaggorna, avbockningarna och den byggda listan — bygg en ny nästa vecka.
