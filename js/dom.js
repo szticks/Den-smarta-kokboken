@@ -63,6 +63,7 @@ export function initElements() {
 
   // Modal Recipe details content
   elements.modalRecipeTitle = document.getElementById('modal-recipe-title');
+  elements.modalRecipeImageContainer = document.getElementById('modal-recipe-image-container');
   elements.modalRecipeImage = document.getElementById('modal-recipe-image');
   elements.modalRecipeTags = document.getElementById('modal-recipe-tags');
   elements.modalRecipeIngredients = document.getElementById('modal-recipe-ingredients');

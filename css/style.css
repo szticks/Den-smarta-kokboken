@@ -1283,6 +1283,25 @@ input:checked + .slider::before {
   color: var(--text-primary);
 }
 
+/* Cooking view: rotate the phone (or use a tablet) and ingredients/instructions
+   sit side by side instead of stacked, same idea as ICA's app. */
+@media (orientation: landscape) and (min-width: 600px) {
+  #modal-recipe-detail .modal-container {
+    max-width: 760px;
+  }
+
+  .modal-recipe-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .modal-recipe-columns .modal-section {
+    margin-bottom: 0;
+  }
+}
+
 .detail-list.steps {
   list-style-type: decimal;
   padding-left: 20px;

@@ -9,10 +9,50 @@ import { renderLibrary } from '../views/library.js';
 import { openDayChooser } from './dayChooser.js';
 import { openRecipeForm } from './recipeForm.js';
 
+// Keeps the screen awake while a recipe is open, so it doesn't lock mid-cooking.
+let wakeLockSentinel = null;
+let wakeLockDesired = false;
+
+async function requestWakeLock() {
+  if (!('wakeLock' in navigator)) return; // unsupported browser - fail silently
+  try {
+    wakeLockSentinel = await navigator.wakeLock.request('screen');
+  } catch (err) {
+    console.warn('Wake Lock request failed:', err);
+  }
+}
+
+function releaseWakeLock() {
+  wakeLockDesired = false;
+  if (wakeLockSentinel) {
+    wakeLockSentinel.release().catch(() => {});
+    wakeLockSentinel = null;
+  }
+}
+
 export function initRecipeDetailModal() {
   elements.btnCloseRecipeDetail.addEventListener('click', () => {
     elements.modalRecipeDetail.classList.add('hidden');
   });
+
+  // The browser auto-releases the wake lock whenever the tab loses visibility
+  // (e.g. screen locks on its own, user switches apps) - re-request it once
+  // the page is visible again, as long as the recipe is still open.
+  document.addEventListener('visibilitychange', () => {
+    if (wakeLockDesired && document.visibilityState === 'visible') {
+      requestWakeLock();
+    }
+  });
+
+  // Release the wake lock whenever the modal becomes hidden, regardless of
+  // which code path closed it (close button, navigating to another tab,
+  // opening the edit/plan modal from within, etc.)
+  const observer = new MutationObserver(() => {
+    if (elements.modalRecipeDetail.classList.contains('hidden')) {
+      releaseWakeLock();
+    }
+  });
+  observer.observe(elements.modalRecipeDetail, { attributes: true, attributeFilter: ['class'] });
 }
 
 export function showRecipeDetail(recipe) {
@@ -21,8 +61,10 @@ export function showRecipeDetail(recipe) {
   if (recipe.image) {
     elements.modalRecipeImage.src = recipe.image;
     elements.modalRecipeImage.classList.remove('hidden');
+    elements.modalRecipeImageContainer.classList.remove('hidden');
   } else {
     elements.modalRecipeImage.classList.add('hidden');
+    elements.modalRecipeImageContainer.classList.add('hidden');
   }
 
   // Tags
@@ -88,4 +130,7 @@ export function showRecipeDetail(recipe) {
 
   elements.modalRecipeDetail.classList.remove('hidden');
   lucide.createIcons();
+
+  wakeLockDesired = true;
+  requestWakeLock();
 }
