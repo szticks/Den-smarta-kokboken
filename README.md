@@ -2,6 +2,8 @@
 
 Detta projekt är en plattformsoberoende **Progressive Web App (PWA)** som gör matplanering och inköp roligt och enkelt. All din data sparas privat i ditt eget **Google Sheets**-dokument.
 
+**Live:** https://szticks.github.io/Den-smarta-kokboken/ (kräver att du kopplar ditt eget Google Sheet enligt Steg 1 nedan — själva appen är delad, din data är det inte).
+
 ## Projektstruktur
 
 Inga byggverktyg krävs – frontend körs som native ES-moduler direkt i webbläsaren.
@@ -23,9 +25,11 @@ backend/               Google Apps Script-backend, uppdelad per domän (se Steg 
 manifest.json, sw.js   PWA-manifest och service worker
 ```
 
-### Automatisk driftsättning av backend
+### Automatisk driftsättning
 
-`backend/`-mappen driftsätts numera automatiskt till Apps Script via [clasp](https://github.com/google/clasp) + GitHub Actions ([.github/workflows/deploy-backend.yml](.github/workflows/deploy-backend.yml)) varje gång något i `backend/` pushas till `main` — inget manuellt kopiera-klistra i webbeditorn behövs längre för framtida ändringar.
+**Frontend** driftsätts automatiskt via GitHub Pages varje gång `main` uppdateras — inget extra steg krävs, GitHub bygger om sidan på egen hand inom någon minut efter varje push.
+
+**Backend** (`backend/`-mappen) driftsätts automatiskt till Apps Script via [clasp](https://github.com/google/clasp) + GitHub Actions ([.github/workflows/deploy-backend.yml](.github/workflows/deploy-backend.yml)) varje gång något i `backend/` pushas till `main` — inget manuellt kopiera-klistra i webbeditorn behövs längre för framtida ändringar.
 
 Engångsuppsättning (redan gjord för detta repo, men bra att veta):
 1. `npm install -g @google/clasp` och `clasp login` lokalt (kräver att Apps Script API är påslaget på `https://script.google.com/home/usersettings`).
@@ -83,16 +87,16 @@ Eftersom projektet är skrivet i ren HTML/CSS/JS behövs inga krångliga byggste
 
 ## Steg 3: Installera på mobilen (PWA)
 
-Eftersom appen är en Progressive Web App kan du köra den direkt på din telefon som en vanlig app, helt offline:
+Appen är live på **https://szticks.github.io/Den-smarta-kokboken/** (GitHub Pages, gratis, riktig HTTPS — går bra att öppna direkt istället för att köra lokalt). Eftersom den är en Progressive Web App kan du installera den på din telefon som en vanlig app, helt offline:
 
 ### iPhone (Safari):
-1. Öppna Safari och gå till din lokala server-IP (t.ex. `http://din-dators-ip:8000`) eller den URL där du har driftsatt appen gratis (t.ex. GitHub Pages eller Vercel).
+1. Öppna Safari och gå till https://szticks.github.io/Den-smarta-kokboken/ (eller din lokala server-IP under utveckling, t.ex. `http://din-dators-ip:8000`).
 2. Klicka på **Dela**-knappen (fyrkanten med pil upp).
 3. Välj **Lägg till på hemskärmen** (Add to Home Screen).
 4. Öppna appen från din hemskärm och klistra in din Webbapps-URL och API-nyckel på inställningssidan.
 
 ### Android (Chrome):
-1. Öppna Chrome och gå till appens URL.
+1. Öppna Chrome och gå till https://szticks.github.io/Den-smarta-kokboken/.
 2. Klicka på de tre punkterna i hörnet.
 3. Välj **Installera app** eller **Lägg till på startskärmen**.
 
