@@ -22,6 +22,9 @@
   <!-- QR Code generator CDN (used to link new devices without manual typing) -->
   <script src="https://unpkg.com/qrcode@1.4.4/build/qrcode.min.js"></script>
 
+  <!-- Google Identity Services (Sign in with Google, replaces manual API-key copying) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
   <!-- CSS -->
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -214,11 +217,20 @@
               <input type="url" id="settings-app-url" placeholder="https://script.google.com/macros/s/.../exec" required>
               <small>Hitta denna under Distribuera -> Ny distribution i ditt Apps Script.</small>
             </div>
-            
+
             <div class="form-group">
-              <label for="settings-api-key">API-nyckel (Token)</label>
-              <input type="text" id="settings-api-key" placeholder="Kopiera nyckeln från fliken 'Settings' i ditt Sheet" required>
-              <small>Denna skapas automatiskt i ditt ark efter första anropet.</small>
+              <button type="button" id="btn-google-signin" class="btn btn-primary btn-full">
+                <i data-lucide="log-in"></i> Logga in med Google
+              </button>
+              <small id="google-signin-status"></small>
+            </div>
+
+            <hr class="modal-divider">
+
+            <div class="form-group">
+              <label for="settings-api-key">API-nyckel (Token) — alternativ till att logga in med Google</label>
+              <input type="text" id="settings-api-key" placeholder="Kopiera nyckeln från fliken 'Settings' i ditt Sheet">
+              <small>Behövs bara om du inte loggar in med Google ovan. Skapas automatiskt i ditt ark efter första anropet.</small>
             </div>
 
             <div class="form-actions">
@@ -230,7 +242,7 @@
               </button>
             </div>
           </form>
-          
+
           <div id="connection-status-msg" class="connection-status-msg hidden"></div>
         </div>
 

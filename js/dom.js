@@ -47,6 +47,8 @@ export function initElements() {
   elements.settingsForm = document.getElementById('settings-form');
   elements.settingsAppUrl = document.getElementById('settings-app-url');
   elements.settingsApiKey = document.getElementById('settings-api-key');
+  elements.btnGoogleSignIn = document.getElementById('btn-google-signin');
+  elements.googleSignInStatus = document.getElementById('google-signin-status');
   elements.btnTestConnection = document.getElementById('btn-test-connection');
   elements.connectionStatusMsg = document.getElementById('connection-status-msg');
   elements.settingsBaseline = document.getElementById('settings-baseline-items');

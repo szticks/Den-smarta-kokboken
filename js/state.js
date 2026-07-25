@@ -1,6 +1,8 @@
 // ==========================================
 // Global Application State
 // ==========================================
+import { isSignedIn } from './googleAuth.js';
+
 export const state = {
   recipes: [],
   weeklyPlan: [],
@@ -33,5 +35,5 @@ export const DEFAULT_BASELINE = [
 ];
 
 export function isConfigured() {
-  return !!(state.config.webAppUrl && state.config.apiKey);
+  return !!(state.config.webAppUrl && (state.config.apiKey || isSignedIn()));
 }

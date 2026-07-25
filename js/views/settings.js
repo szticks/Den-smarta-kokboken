@@ -6,8 +6,31 @@ import { elements } from '../dom.js';
 import { callApi, fetchData } from '../api.js';
 import { showNotification } from '../utils.js';
 import { renderShoppingList, updateShoppingBadge } from './shopping.js';
+import { signInWithGoogle, isSignedIn, getSignedInEmail } from '../googleAuth.js';
 
 export function initSettingsView() {
+  updateGoogleSignInStatus();
+
+  elements.btnGoogleSignIn.addEventListener('click', async () => {
+    try {
+      elements.googleSignInStatus.innerText = 'Loggar in...';
+      await signInWithGoogle();
+      updateGoogleSignInStatus();
+      showNotification('Inloggad med Google!', 'success');
+
+      // If the URL is already filled in, save it and load data now that we're authenticated
+      const url = elements.settingsAppUrl.value.trim();
+      if (url) {
+        localStorage.setItem('smarta_kokboken_url', url);
+        state.config.webAppUrl = url;
+        fetchData();
+      }
+    } catch (err) {
+      console.error('Google sign-in failed:', err);
+      elements.googleSignInStatus.innerText = 'Inloggningen misslyckades eller avbröts.';
+    }
+  });
+
   elements.settingsForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -30,8 +53,8 @@ export function initSettingsView() {
     const url = elements.settingsAppUrl.value.trim();
     const key = elements.settingsApiKey.value.trim();
 
-    if (!url || !key) {
-      showConnectionMsg('Fyll i både URL och API-nyckel för att testa!', 'error');
+    if (!url || (!key && !isSignedIn())) {
+      showConnectionMsg('Fyll i webbapps-URL:en, och antingen logga in med Google eller ange en API-nyckel.', 'error');
       return;
     }
 
@@ -109,4 +132,10 @@ function showConnectionMsg(msg, type) {
   elements.connectionStatusMsg.className = `connection-status-msg ${type}`;
   elements.connectionStatusMsg.innerText = msg;
   elements.connectionStatusMsg.classList.remove('hidden');
+}
+
+function updateGoogleSignInStatus() {
+  elements.googleSignInStatus.innerText = isSignedIn()
+    ? `Inloggad som ${getSignedInEmail() || 'ditt Google-konto'}`
+    : '';
 }

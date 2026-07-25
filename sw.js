@@ -1,4 +1,4 @@
-const CACHE_NAME = 'smarta-kokboken-v1.13';
+const CACHE_NAME = 'smarta-kokboken-v1.14';
 const ASSETS = [
   './',
   './index.html',
@@ -10,6 +10,7 @@ const ASSETS = [
   './js/state.js',
   './js/dom.js',
   './js/utils.js',
+  './js/googleAuth.js',
   './js/storage.js',
   './js/router.js',
   './js/api.js',
@@ -24,7 +25,8 @@ const ASSETS = [
   './js/modals/quickPantry.js',
   './js/modals/shoppingBuilder.js',
   'https://unpkg.com/lucide@latest',
-  'https://unpkg.com/qrcode@1.4.4/build/qrcode.min.js'
+  'https://unpkg.com/qrcode@1.4.4/build/qrcode.min.js',
+  'https://accounts.google.com/gsi/client'
 ];
 
 // Install Service Worker

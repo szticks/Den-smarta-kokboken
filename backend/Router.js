@@ -20,12 +20,19 @@ function initializeSpreadsheet() {
     settingsSheet.getRange(1, 2).setValue(token);
     settingsSheet.getRange(2, 1).setValue("VERSION");
     settingsSheet.getRange(2, 2).setValue("1.3");
+    settingsSheet.getRange(3, 1).setValue("AUTHORIZED_EMAIL");
+    settingsSheet.getRange(3, 2).setValue("");
 
     // Formatera inställningssidan för fin design
-    settingsSheet.getRange("A1:B2").setFontWeight("bold");
-    settingsSheet.getRange("A1:A2").setBackground("#eaeaea");
+    settingsSheet.getRange("A1:B3").setFontWeight("bold");
+    settingsSheet.getRange("A1:A3").setBackground("#eaeaea");
     settingsSheet.setColumnWidth(1, 120);
     settingsSheet.setColumnWidth(2, 350);
+  } else if (getSettingValue(settingsSheet, "AUTHORIZED_EMAIL") === null) {
+    // Migrera ark som skapades innan Google-inloggning fanns
+    var newRow = settingsSheet.getLastRow() + 1;
+    settingsSheet.getRange(newRow, 1).setValue("AUTHORIZED_EMAIL").setFontWeight("bold").setBackground("#eaeaea");
+    settingsSheet.getRange(newRow, 2).setValue("");
   }
 
   // Hjälpfunktion för att skapa tabell med kolumner
@@ -92,13 +99,13 @@ function doPost(e) {
 
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var settingsSheet = ss.getSheetByName("Settings");
-    var expectedToken = settingsSheet.getRange(1, 2).getValue();
 
-    // Autentisering
-    if (requestData.token !== expectedToken) {
+    // Autentisering: antingen inloggad med Google (jämförs mot AUTHORIZED_EMAIL)
+    // eller den äldre delade API-nyckeln, för bakåtkompatibilitet.
+    if (!isRequestAuthorized(settingsSheet, requestData)) {
       return ContentService.createTextOutput(JSON.stringify({
         success: false,
-        error: "Ogiltig API-nyckel. Kontrollera inställningarna i appen."
+        error: "Ogiltig inloggning. Kontrollera inställningarna i appen."
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
@@ -192,6 +199,44 @@ function doPost(e) {
       error: err.toString()
     })).setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+// ----------------------------------------------------
+// Autentisering
+// ----------------------------------------------------
+function isRequestAuthorized(settingsSheet, requestData) {
+  if (requestData.googleAccessToken) {
+    var authorizedEmail = getSettingValue(settingsSheet, "AUTHORIZED_EMAIL");
+    var callerEmail = getEmailFromGoogleAccessToken(requestData.googleAccessToken);
+    if (authorizedEmail && callerEmail && authorizedEmail.toLowerCase() === callerEmail.toLowerCase()) {
+      return true;
+    }
+  }
+
+  var expectedToken = getSettingValue(settingsSheet, "API_KEY");
+  return !!expectedToken && requestData.token === expectedToken;
+}
+
+function getEmailFromGoogleAccessToken(accessToken) {
+  try {
+    var response = UrlFetchApp.fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: 'Bearer ' + accessToken },
+      muteHttpExceptions: true
+    });
+    if (response.getResponseCode() !== 200) return null;
+    var data = JSON.parse(response.getContentText());
+    return data.email || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function getSettingValue(settingsSheet, key) {
+  var data = settingsSheet.getDataRange().getValues();
+  for (var i = 0; i < data.length; i++) {
+    if (data[i][0] === key) return data[i][1];
+  }
+  return null;
 }
 
 // ----------------------------------------------------

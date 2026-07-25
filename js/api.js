@@ -6,6 +6,7 @@ import { elements } from './dom.js';
 import { showNotification } from './utils.js';
 import { switchView } from './router.js';
 import { updateShoppingBadge } from './views/shopping.js';
+import { getValidAccessToken } from './googleAuth.js';
 
 // Actions that mutate server state and must be queued while offline
 const SYNC_ACTIONS = [
@@ -44,6 +45,7 @@ export async function callApi(action, payload = {}) {
       body: JSON.stringify({
         action,
         token: state.config.apiKey,
+        googleAccessToken: getValidAccessToken() || undefined,
         payload
       })
     });
