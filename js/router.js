@@ -42,4 +42,5 @@ export function closeAllModals() {
   elements.modalRecipeForm.classList.add('hidden');
   elements.modalQuickPantry.classList.add('hidden');
   elements.modalShoppingBuilder.classList.add('hidden');
+  elements.modalSetupWizard.classList.add('hidden');
 }

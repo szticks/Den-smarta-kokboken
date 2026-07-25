@@ -43,6 +43,17 @@ export function initElements() {
   elements.btnCloseShoppingBuilder = document.getElementById('btn-close-shopping-builder');
   elements.btnConfirmShoppingList = document.getElementById('btn-confirm-shopping-list');
 
+  // Automated Setup Wizard Modal
+  elements.modalSetupWizard = document.getElementById('modal-setup-wizard');
+  elements.btnCloseSetupWizard = document.getElementById('btn-close-setup-wizard');
+  elements.setupWizardIntro = document.getElementById('setup-wizard-intro');
+  elements.btnStartProvisioning = document.getElementById('btn-start-provisioning');
+  elements.setupWizardProgress = document.getElementById('setup-wizard-progress');
+  elements.setupWizardLog = document.getElementById('setup-wizard-log');
+  elements.setupWizardResult = document.getElementById('setup-wizard-result');
+  elements.setupWizardScriptLink = document.getElementById('setup-wizard-script-link');
+  elements.btnFinishProvisioning = document.getElementById('btn-finish-provisioning');
+
   // Settings
   elements.settingsForm = document.getElementById('settings-form');
   elements.settingsAppUrl = document.getElementById('settings-app-url');
@@ -57,6 +68,7 @@ export function initElements() {
   elements.btnSaveBaseline = document.getElementById('btn-save-baseline');
   elements.btnShowQr = document.getElementById('btn-show-qr');
   elements.qrCodeWrapper = document.getElementById('qr-code-wrapper');
+  elements.btnOpenSetupWizard = document.getElementById('btn-open-setup-wizard');
   elements.qrCodeCanvas = document.getElementById('qr-code-canvas');
 
   // Modals

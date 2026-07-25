@@ -1,4 +1,4 @@
-const CACHE_NAME = 'smarta-kokboken-v1.15';
+const CACHE_NAME = 'smarta-kokboken-v1.16';
 const ASSETS = [
   './',
   './index.html',
@@ -11,6 +11,7 @@ const ASSETS = [
   './js/dom.js',
   './js/utils.js',
   './js/googleAuth.js',
+  './js/googleProvision.js',
   './js/storage.js',
   './js/router.js',
   './js/api.js',
@@ -24,6 +25,7 @@ const ASSETS = [
   './js/modals/dayChooser.js',
   './js/modals/quickPantry.js',
   './js/modals/shoppingBuilder.js',
+  './js/modals/setupWizard.js',
   'https://unpkg.com/lucide@latest',
   'https://unpkg.com/qrcode@1.4.4/build/qrcode.min.js',
   'https://accounts.google.com/gsi/client'

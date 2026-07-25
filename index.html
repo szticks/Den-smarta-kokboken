@@ -211,6 +211,15 @@
         </div>
 
         <div class="settings-card glass-panel">
+          <h3>Ny här?</h3>
+          <p class="subtitle">Skapa ett eget Google Sheet och en backend automatiskt - inget kopiera-klistra i Apps Script behövs.</p>
+          <button type="button" id="btn-open-setup-wizard" class="btn btn-primary btn-full">
+            <i data-lucide="wand-2"></i> Skapa min egen kokbok automatiskt
+          </button>
+        </div>
+
+        <div class="settings-card glass-panel mt-4">
+          <h3>Manuell anslutning</h3>
           <form id="settings-form" class="settings-form">
             <div class="form-group">
               <label for="settings-app-url">Google Apps Script Web App URL</label>
@@ -526,6 +535,40 @@
       </div>
       <div class="modal-footer">
         <button id="btn-confirm-shopping-list" class="btn btn-primary btn-full">Skapa lista</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- F. AUTOMATED SETUP WIZARD MODAL -->
+  <div id="modal-setup-wizard" class="modal-overlay hidden">
+    <div class="modal-container glass-panel">
+      <div class="modal-header">
+        <h3>Skapa din egen kokbok</h3>
+        <button class="modal-close" id="btn-close-setup-wizard"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div id="setup-wizard-intro">
+          <p class="subtitle">Det här skapar ett nytt Google Sheet och en backend åt dig automatiskt, precis som README:ns manuella steg fast utan kopiera-klistra. Kräver att du loggar in med Google.</p>
+          <button type="button" id="btn-start-provisioning" class="btn btn-primary btn-full">
+            <i data-lucide="wand-2"></i> Skapa nu
+          </button>
+        </div>
+
+        <div id="setup-wizard-progress" class="hidden">
+          <div id="setup-wizard-log" class="setup-wizard-log"></div>
+        </div>
+
+        <div id="setup-wizard-result" class="hidden">
+          <p class="subtitle">Nästan klart! Ett sista steg måste göras manuellt (Google kräver det, går inte att automatisera bort):</p>
+          <ol class="detail-list steps">
+            <li>Öppna <a id="setup-wizard-script-link" href="" target="_blank" rel="noopener">Apps Script-editorn för ditt nya projekt</a>.</li>
+            <li>Välj funktionen <strong>initializeSpreadsheet</strong> i rullgardinen bredvid Kör-knappen (▶️).</li>
+            <li>Klicka <strong>Kör</strong> och godkänn behörigheterna som visas.</li>
+          </ol>
+          <button type="button" id="btn-finish-provisioning" class="btn btn-success btn-full">
+            <i data-lucide="check"></i> Jag har godkänt behörigheterna - testa kopplingen
+          </button>
+        </div>
       </div>
     </div>
   </div>

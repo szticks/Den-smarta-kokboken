@@ -1364,6 +1364,36 @@ input:checked + .slider::before {
   font-weight: 500;
 }
 
+.setup-wizard-log {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.setup-wizard-log-line {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  padding-left: 20px;
+  position: relative;
+}
+
+.setup-wizard-log-line::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--color-primary);
+}
+
+.setup-wizard-log-line.error {
+  color: var(--color-danger);
+}
+
+.setup-wizard-log-line.error::before {
+  content: '✗';
+  color: var(--color-danger);
+}
+
 .photo-preview-wrapper {
   margin-top: 10px;
 }
