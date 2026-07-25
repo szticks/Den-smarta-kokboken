@@ -48,7 +48,9 @@ export function initElements() {
   elements.settingsAppUrl = document.getElementById('settings-app-url');
   elements.settingsApiKey = document.getElementById('settings-api-key');
   elements.btnGoogleSignIn = document.getElementById('btn-google-signin');
-  elements.googleSignInStatus = document.getElementById('google-signin-status');
+  elements.googleSignInIcon = document.getElementById('google-signin-icon');
+  elements.googleSignInLabel = document.getElementById('google-signin-label');
+  elements.btnGoogleSignOut = document.getElementById('btn-google-signout');
   elements.btnTestConnection = document.getElementById('btn-test-connection');
   elements.connectionStatusMsg = document.getElementById('connection-status-msg');
   elements.settingsBaseline = document.getElementById('settings-baseline-items');

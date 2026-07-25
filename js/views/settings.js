@@ -6,14 +6,14 @@ import { elements } from '../dom.js';
 import { callApi, fetchData } from '../api.js';
 import { showNotification } from '../utils.js';
 import { renderShoppingList, updateShoppingBadge } from './shopping.js';
-import { signInWithGoogle, isSignedIn, getSignedInEmail } from '../googleAuth.js';
+import { signInWithGoogle, signOutFromGoogle, isSignedIn, getSignedInEmail } from '../googleAuth.js';
 
 export function initSettingsView() {
   updateGoogleSignInStatus();
 
   elements.btnGoogleSignIn.addEventListener('click', async () => {
+    elements.googleSignInLabel.textContent = 'Loggar in...';
     try {
-      elements.googleSignInStatus.innerText = 'Loggar in...';
       await signInWithGoogle();
       updateGoogleSignInStatus();
       showNotification('Inloggad med Google!', 'success');
@@ -27,8 +27,15 @@ export function initSettingsView() {
       }
     } catch (err) {
       console.error('Google sign-in failed:', err);
-      elements.googleSignInStatus.innerText = 'Inloggningen misslyckades eller avbröts.';
+      updateGoogleSignInStatus();
+      showNotification('Inloggningen misslyckades eller avbröts.', 'error');
     }
+  });
+
+  elements.btnGoogleSignOut.addEventListener('click', () => {
+    signOutFromGoogle();
+    updateGoogleSignInStatus();
+    showNotification('Utloggad från Google.', 'info');
   });
 
   elements.settingsForm.addEventListener('submit', async (e) => {
@@ -135,7 +142,18 @@ function showConnectionMsg(msg, type) {
 }
 
 function updateGoogleSignInStatus() {
-  elements.googleSignInStatus.innerText = isSignedIn()
-    ? `Inloggad som ${getSignedInEmail() || 'ditt Google-konto'}`
-    : '';
+  if (isSignedIn()) {
+    elements.googleSignInLabel.textContent = `Inloggad som ${getSignedInEmail() || 'ditt Google-konto'}`;
+    elements.googleSignInIcon.setAttribute('data-lucide', 'check-circle-2');
+    elements.btnGoogleSignIn.classList.remove('btn-primary');
+    elements.btnGoogleSignIn.classList.add('btn-success');
+    elements.btnGoogleSignOut.classList.remove('hidden');
+  } else {
+    elements.googleSignInLabel.textContent = 'Logga in med Google';
+    elements.googleSignInIcon.setAttribute('data-lucide', 'log-in');
+    elements.btnGoogleSignIn.classList.remove('btn-success');
+    elements.btnGoogleSignIn.classList.add('btn-primary');
+    elements.btnGoogleSignOut.classList.add('hidden');
+  }
+  lucide.createIcons();
 }
