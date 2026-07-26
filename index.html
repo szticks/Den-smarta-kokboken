@@ -19,8 +19,6 @@
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- QR Code generator CDN (used to link new devices without manual typing) -->
-  <script src="https://unpkg.com/qrcode@1.4.4/build/qrcode.min.js"></script>
 
   <!-- Google Identity Services (Sign in with Google, replaces manual API-key copying) -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -253,17 +251,6 @@
           </form>
 
           <div id="connection-status-msg" class="connection-status-msg hidden"></div>
-        </div>
-
-        <div class="settings-card glass-panel mt-4">
-          <h3>Koppla en ny enhet med QR-kod</h3>
-          <p class="subtitle">Skanna med kameran på en annan telefon/surfplatta för att koppla den till samma Google Sheet, utan att skriva in URL och nyckel manuellt.</p>
-          <button type="button" id="btn-show-qr" class="btn btn-secondary">
-            <i data-lucide="qr-code"></i> Visa QR-kod
-          </button>
-          <div id="qr-code-wrapper" class="qr-code-wrapper hidden">
-            <canvas id="qr-code-canvas"></canvas>
-          </div>
         </div>
 
         <div class="settings-card glass-panel mt-4">

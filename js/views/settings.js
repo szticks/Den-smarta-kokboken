@@ -1,7 +1,7 @@
 // ==========================================
 // Settings Logic
 // ==========================================
-import { state, isConfigured } from '../state.js';
+import { state } from '../state.js';
 import { elements } from '../dom.js';
 import { callApi, fetchData } from '../api.js';
 import { showNotification } from '../utils.js';
@@ -90,35 +90,6 @@ export function initSettingsView() {
     } catch (err) {
       showConnectionMsg(`Kopplingen misslyckades: ${err.message}`, 'error');
     }
-  });
-
-  // Show/hide QR code to link a new device without manual typing
-  elements.btnShowQr.addEventListener('click', () => {
-    const isHidden = elements.qrCodeWrapper.classList.contains('hidden');
-
-    if (!isHidden) {
-      elements.qrCodeWrapper.classList.add('hidden');
-      return;
-    }
-
-    if (!isConfigured()) {
-      showNotification('Spara dina inställningar innan du skapar en QR-kod.', 'error');
-      return;
-    }
-
-    const deviceLinkUrl = `${window.location.origin}${window.location.pathname}?${new URLSearchParams({
-      configUrl: state.config.webAppUrl,
-      configKey: state.config.apiKey
-    })}`;
-
-    QRCode.toCanvas(elements.qrCodeCanvas, deviceLinkUrl, { width: 220, margin: 1 }, (err) => {
-      if (err) {
-        console.error('QR generation failed:', err);
-        showNotification('Kunde inte skapa QR-koden.', 'error');
-        return;
-      }
-      elements.qrCodeWrapper.classList.remove('hidden');
-    });
   });
 
   // Baseline list save

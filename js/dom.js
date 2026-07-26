@@ -66,10 +66,7 @@ export function initElements() {
   elements.connectionStatusMsg = document.getElementById('connection-status-msg');
   elements.settingsBaseline = document.getElementById('settings-baseline-items');
   elements.btnSaveBaseline = document.getElementById('btn-save-baseline');
-  elements.btnShowQr = document.getElementById('btn-show-qr');
-  elements.qrCodeWrapper = document.getElementById('qr-code-wrapper');
   elements.btnOpenSetupWizard = document.getElementById('btn-open-setup-wizard');
-  elements.qrCodeCanvas = document.getElementById('qr-code-canvas');
 
   // Modals
   elements.modalRecipeDetail = document.getElementById('modal-recipe-detail');

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'smarta-kokboken-v1.17';
+const CACHE_NAME = 'smarta-kokboken-v1.18';
 const ASSETS = [
   './',
   './index.html',
@@ -27,7 +27,6 @@ const ASSETS = [
   './js/modals/shoppingBuilder.js',
   './js/modals/setupWizard.js',
   'https://unpkg.com/lucide@latest',
-  'https://unpkg.com/qrcode@1.4.4/build/qrcode.min.js',
   'https://accounts.google.com/gsi/client'
 ];
 

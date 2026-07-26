@@ -1211,16 +1211,6 @@ input:checked + .slider::before {
   gap: 16px;
 }
 
-.qr-code-wrapper {
-  margin-top: 14px;
-  display: flex;
-  justify-content: center;
-  background: #fff;
-  padding: 14px;
-  border-radius: var(--radius-md);
-  width: fit-content;
-}
-
 .form-actions {
   display: flex;
   gap: 12px;
