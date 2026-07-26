@@ -147,13 +147,23 @@ function generateLegacyKey() {
   return token;
 }
 
+// Stamps a creation timestamp into the Sheet/script names so repeated or
+// duplicate provisioning runs can actually be told apart in Drive.
+function formatTimestamp() {
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+}
+
 // Runs the whole setup end to end, reporting progress via onProgress(stepLabel).
 export async function provisionBackend(accessToken, email, onProgress) {
   onProgress('Hämtar backend-koden...');
   const files = await fetchBackendSourceFiles();
 
+  const timestamp = formatTimestamp();
+
   onProgress('Skapar ditt Google Sheet...');
-  const spreadsheetId = await createSpreadsheet(accessToken, 'Smarta Kokboken');
+  const spreadsheetId = await createSpreadsheet(accessToken, `Smarta Kokboken (${timestamp})`);
 
   try {
     onProgress('Fyller i grundstrukturen i arket...');
@@ -161,7 +171,7 @@ export async function provisionBackend(accessToken, email, onProgress) {
     await setUpInitialSheetData(accessToken, spreadsheetId, email, legacyApiKey);
 
     onProgress('Skapar Apps Script-projektet...');
-    const scriptId = await createBoundScript(accessToken, 'Smarta Kokboken Engine', spreadsheetId);
+    const scriptId = await createBoundScript(accessToken, `Smarta Kokboken Engine (${timestamp})`, spreadsheetId);
 
     onProgress('Laddar upp backend-koden...');
     await pushBackendFiles(accessToken, scriptId, files);
