@@ -1,7 +1,7 @@
 // ==========================================
 // Recipe Creation / Form Logic
 // ==========================================
-import { state } from '../state.js';
+import { state, DEFAULT_SERVINGS } from '../state.js';
 import { elements } from '../dom.js';
 import { callApi } from '../api.js';
 import { showNotification } from '../utils.js';
@@ -157,6 +157,8 @@ export function initRecipeFormModal() {
 
     const id = elements.recipeFormId.value;
     const title = elements.recipeFormTitle.value.trim();
+    const servingsInput = parseInt(elements.recipeFormServings.value, 10);
+    const servings = servingsInput > 0 ? servingsInput : DEFAULT_SERVINGS;
     const image = elements.recipeFormImage.value.trim();
     const url = elements.recipeFormUrl.value.trim();
 
@@ -191,6 +193,7 @@ export function initRecipeFormModal() {
     const recipeData = {
       id: id || null,
       title,
+      servings,
       image,
       url,
       tags: activeTags,
@@ -266,6 +269,7 @@ function resetRecipeForm() {
 // Fills the form from a scrape/OCR result shape ({ title, image, url, ingredients, instructions, tags })
 function fillFormFromRecipeDraft(recipe, fallbackUrl = '') {
   elements.recipeFormTitle.value = recipe.title || '';
+  elements.recipeFormServings.value = recipe.servings || DEFAULT_SERVINGS;
   elements.recipeFormImage.value = recipe.image || '';
   elements.recipeFormUrl.value = recipe.url || fallbackUrl;
   elements.recipeFormIngredients.value = ingredientsToText(recipe.ingredients);

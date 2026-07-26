@@ -641,6 +641,50 @@ small {
   height: 16px;
 }
 
+.servings-stepper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.servings-stepper span {
+  min-width: 80px;
+  text-align: center;
+}
+
+.servings-stepper #modal-recipe-servings-value {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.day-card-servings {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.day-card-servings button {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+}
+.day-card-servings button:hover {
+  color: var(--text-primary);
+}
+
+.day-card-servings span {
+  min-width: 14px;
+  text-align: center;
+}
+
 .btn-reroll {
   color: var(--color-accent-orange);
 }

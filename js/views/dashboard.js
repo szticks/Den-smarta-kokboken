@@ -30,6 +30,7 @@ export function renderDashboard() {
     card.dataset.dayIdx = idx;
 
     let recipeTitleText = hasRecipe ? dayPlan.recipe_title : 'Inte planerad – klicka för att lägga till';
+    const daysServings = hasRecipe ? (parseInt(dayPlan.servings, 10) || state.defaultServings) : null;
 
     card.innerHTML = `
       <div class="day-card-left">
@@ -38,6 +39,11 @@ export function renderDashboard() {
       </div>
       <div class="day-card-right">
         ${hasRecipe ? `
+          <div class="day-card-servings">
+            <button class="btn-servings-decrease" data-day-idx="${idx}" title="Färre portioner"><i data-lucide="minus"></i></button>
+            <span>${daysServings}</span>
+            <button class="btn-servings-increase" data-day-idx="${idx}" title="Fler portioner"><i data-lucide="plus"></i></button>
+          </div>
           <button class="btn-icon-sm btn-reroll" data-day-idx="${idx}" title="Snurra igen (Slumpa annat recept)">
             <i data-lucide="refresh-cw"></i>
           </button>
@@ -77,7 +83,7 @@ export function renderDashboard() {
       // Remove plan button
       card.querySelector('.btn-remove-plan').addEventListener('click', async (e) => {
         e.stopPropagation();
-        await updateWeeklyPlanInState(idx, '', '');
+        await updateWeeklyPlanInState(idx, '', '', '');
         renderDashboard();
       });
 
@@ -85,6 +91,18 @@ export function renderDashboard() {
       card.querySelector('.btn-reroll').addEventListener('click', async (e) => {
         e.stopPropagation();
         rerollSingleDay(idx);
+      });
+
+      // Per-day servings stepper (e.g. doubling up for meal-prep/guests)
+      card.querySelector('.btn-servings-decrease').addEventListener('click', async (e) => {
+        e.stopPropagation();
+        await updateWeeklyPlanInState(idx, dayPlan.recipe_id, dayPlan.recipe_title, Math.max(1, daysServings - 1));
+        renderDashboard();
+      });
+      card.querySelector('.btn-servings-increase').addEventListener('click', async (e) => {
+        e.stopPropagation();
+        await updateWeeklyPlanInState(idx, dayPlan.recipe_id, dayPlan.recipe_title, Math.min(50, daysServings + 1));
+        renderDashboard();
       });
     }
 
@@ -117,16 +135,16 @@ export async function rerollSingleDay(dayIdx) {
   const selectedRecipe = availableRecipes[randomIndex];
 
   // Apply changes
-  await updateWeeklyPlanInState(dayIdx, selectedRecipe.id, selectedRecipe.title);
+  await updateWeeklyPlanInState(dayIdx, selectedRecipe.id, selectedRecipe.title, state.defaultServings);
   renderDashboard();
   showNotification(`Ny maträtt för ${getWeekDayName(dayIdx)}: ${selectedRecipe.title}!`, 'success');
 }
 
-export async function updateWeeklyPlanInState(dayIdx, recipeId, recipeTitle) {
+export async function updateWeeklyPlanInState(dayIdx, recipeId, recipeTitle, servings = '') {
   // Update state locally
   state.weeklyPlan = state.weeklyPlan.map(p => {
     if (parseInt(p.day_index) === dayIdx) {
-      return { ...p, recipe_id: recipeId, recipe_title: recipeTitle };
+      return { ...p, recipe_id: recipeId, recipe_title: recipeTitle, servings };
     }
     return p;
   });
@@ -135,7 +153,7 @@ export async function updateWeeklyPlanInState(dayIdx, recipeId, recipeTitle) {
   // Sync online
   try {
     await callApi('updateWeeklyPlan', {
-      plan: [{ day_index: dayIdx, recipe_id: recipeId, recipe_title: recipeTitle }]
+      plan: [{ day_index: dayIdx, recipe_id: recipeId, recipe_title: recipeTitle, servings }]
     });
   } catch (err) {
     console.error('Failed to sync weekly plan:', err);
@@ -167,7 +185,7 @@ async function randomizeWeek(contextFilter) {
   const newPlan = [];
   for (let dayIdx = 0; dayIdx < 7; dayIdx++) {
     const recipe = shuffled[dayIdx % shuffled.length];
-    newPlan.push({ day_index: dayIdx, recipe_id: recipe.id, recipe_title: recipe.title });
+    newPlan.push({ day_index: dayIdx, recipe_id: recipe.id, recipe_title: recipe.title, servings: state.defaultServings });
   }
 
   state.weeklyPlan = newPlan;

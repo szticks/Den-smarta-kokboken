@@ -47,24 +47,34 @@ function initializeSpreadsheet() {
   };
 
   // 2. Receptflik
-  var recipesSheet = createSheetIfMissing("Recipes", ["id", "title", "ingredients", "instructions", "tags", "url", "image", "created_at", "needs_review"]);
+  var recipesSheet = createSheetIfMissing("Recipes", ["id", "title", "ingredients", "instructions", "tags", "url", "image", "created_at", "needs_review", "servings"]);
 
-  // Migrera recept-flikar som skapades innan "needs_review"-kolumnen fanns
+  // Migrera recept-flikar som skapades innan "needs_review"/"servings"-kolumnerna fanns
   var recipesHeaderRow = recipesSheet.getRange(1, 1, 1, Math.max(recipesSheet.getLastColumn(), 1)).getValues()[0];
-  if (recipesHeaderRow.indexOf("needs_review") === -1) {
-    var newCol = recipesSheet.getLastColumn() + 1;
-    recipesSheet.getRange(1, newCol).setValue("needs_review").setFontWeight("bold").setBackground("#f3f3f3");
-  }
+  ["needs_review", "servings"].forEach(function(col) {
+    if (recipesHeaderRow.indexOf(col) === -1) {
+      var newCol = recipesSheet.getLastColumn() + 1;
+      recipesSheet.getRange(1, newCol).setValue(col).setFontWeight("bold").setBackground("#f3f3f3");
+      recipesHeaderRow.push(col);
+    }
+  });
 
   // 3. Veckoplansflik
   var weeklyPlanSheet = ss.getSheetByName("WeeklyPlan");
   if (!weeklyPlanSheet) {
     weeklyPlanSheet = ss.insertSheet("WeeklyPlan");
-    weeklyPlanSheet.appendRow(["day_index", "day_name", "recipe_id", "recipe_title"]);
-    weeklyPlanSheet.getRange("A1:D1").setFontWeight("bold").setBackground("#f3f3f3");
+    weeklyPlanSheet.appendRow(["day_index", "day_name", "recipe_id", "recipe_title", "servings"]);
+    weeklyPlanSheet.getRange("A1:E1").setFontWeight("bold").setBackground("#f3f3f3");
     var days = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"];
     for (var i = 0; i < 7; i++) {
-      weeklyPlanSheet.appendRow([i, days[i], "", ""]);
+      weeklyPlanSheet.appendRow([i, days[i], "", "", ""]);
+    }
+  } else {
+    // Migrera veckoplansflikar som skapades innan "servings"-kolumnen fanns
+    var weeklyPlanHeaderRow = weeklyPlanSheet.getRange(1, 1, 1, Math.max(weeklyPlanSheet.getLastColumn(), 1)).getValues()[0];
+    if (weeklyPlanHeaderRow.indexOf("servings") === -1) {
+      var newServingsCol = weeklyPlanSheet.getLastColumn() + 1;
+      weeklyPlanSheet.getRange(1, newServingsCol).setValue("servings").setFontWeight("bold").setBackground("#f3f3f3");
     }
   }
 

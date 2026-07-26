@@ -3,6 +3,10 @@
 // ==========================================
 import { isSignedIn } from './googleAuth.js';
 
+// Recipes without their own explicit portion count are assumed to serve this
+// many - matches the common "recept för 4" default seen on most recipe sites.
+export const DEFAULT_SERVINGS = 4;
+
 export const state = {
   recipes: [],
   weeklyPlan: [],
@@ -10,6 +14,7 @@ export const state = {
   shoppingListChecked: {},
   shoppingListItems: [], // the active, deliberately-built shopping list (see "Bygg inköpslista")
   baselineItems: [],
+  defaultServings: DEFAULT_SERVINGS,
   config: {
     webAppUrl: '',
     apiKey: ''

@@ -1,13 +1,15 @@
 // ==========================================
 // Recipe Detail Modal
 // ==========================================
-import { state } from '../state.js';
+import { state, DEFAULT_SERVINGS } from '../state.js';
 import { elements } from '../dom.js';
 import { callApi } from '../api.js';
-import { escapeHtml, showNotification } from '../utils.js';
+import { escapeHtml, showNotification, parseAmountVal, roundAmount } from '../utils.js';
 import { renderLibrary } from '../views/library.js';
 import { openDayChooser } from './dayChooser.js';
 import { openRecipeForm } from './recipeForm.js';
+
+let currentServings = DEFAULT_SERVINGS;
 
 // Keeps the screen awake while a recipe is open, so it doesn't lock mid-cooking.
 let wakeLockSentinel = null;
@@ -75,14 +77,21 @@ export function showRecipeDetail(recipe) {
     return `<span class="tag-badge tag-${type}">${escapeHtml(tag)}</span>`;
   }).join('');
 
-  // Ingredients list
-  elements.modalRecipeIngredients.innerHTML = recipe.ingredients.map(ing => {
-    let text = ing.rawText || ing.name;
-    if (!ing.rawText && ing.amount) {
-      text = `${ing.amount} ${ing.unit || ''} ${ing.name}`;
-    }
-    return `<li><i data-lucide="dot" style="display:inline-block; width:12px; height:12px; margin-right:4px;"></i> ${escapeHtml(text)}</li>`;
-  }).join('');
+  // Ingredients list, scaled to the currently selected serving size
+  const baseServings = recipe.servings || DEFAULT_SERVINGS;
+  const plannedDay = state.weeklyPlan.find(p => p.recipe_id === recipe.id && p.servings);
+  currentServings = (plannedDay && parseInt(plannedDay.servings, 10)) || state.defaultServings || baseServings;
+
+  renderScaledIngredients(recipe, baseServings);
+
+  elements.btnServingsDecrease.onclick = () => {
+    currentServings = Math.max(1, currentServings - 1);
+    renderScaledIngredients(recipe, baseServings);
+  };
+  elements.btnServingsIncrease.onclick = () => {
+    currentServings = Math.min(50, currentServings + 1);
+    renderScaledIngredients(recipe, baseServings);
+  };
 
   // Instructions steps
   elements.modalRecipeInstructions.innerHTML = recipe.instructions.map(step => {
@@ -133,4 +142,31 @@ export function showRecipeDetail(recipe) {
 
   wakeLockDesired = true;
   requestWakeLock();
+}
+
+// Re-renders the ingredient list scaled from the recipe's base serving count
+// to whatever's currently selected in the stepper. Amounts that can't be
+// parsed as a number (e.g. "efter smak") are shown unscaled, as-is.
+function renderScaledIngredients(recipe, baseServings) {
+  elements.modalRecipeServingsValue.innerText = currentServings;
+  const ratio = currentServings / baseServings;
+
+  elements.modalRecipeIngredients.innerHTML = recipe.ingredients.map(ing => {
+    const amountVal = parseAmountVal(ing.amount);
+    let text;
+
+    if (ratio !== 1 && amountVal !== null) {
+      text = `${roundAmount(amountVal * ratio)} ${ing.unit || ''} ${ing.name}`.trim();
+    } else if (ing.rawText) {
+      text = ing.rawText;
+    } else if (ing.amount) {
+      text = `${ing.amount} ${ing.unit || ''} ${ing.name}`.trim();
+    } else {
+      text = ing.name;
+    }
+
+    return `<li><i data-lucide="dot" style="display:inline-block; width:12px; height:12px; margin-right:4px;"></i> ${escapeHtml(text)}</li>`;
+  }).join('');
+
+  lucide.createIcons();
 }

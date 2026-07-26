@@ -11,6 +11,8 @@ function getRecipes(ss) {
     try { item.instructions = JSON.parse(item.instructions); } catch (e) { item.instructions = []; }
     try { item.tags = JSON.parse(item.tags); } catch (e) { item.tags = []; }
     item.needsReview = (item.needs_review === true || item.needs_review === "TRUE");
+    var parsedServings = parseInt(item.servings, 10);
+    item.servings = parsedServings > 0 ? parsedServings : 4;
   });
 
   return { success: true, recipes: list };
@@ -31,6 +33,9 @@ function saveRecipe(ss, recipe) {
     id = Utilities.getUuid();
   }
 
+  var servings = parseInt(recipe.servings, 10);
+  if (!(servings > 0)) servings = 4;
+
   var rowValues = [
     id,
     recipe.title || "Namnlöst recept",
@@ -40,7 +45,8 @@ function saveRecipe(ss, recipe) {
     recipe.url || "",
     recipe.image || "",
     new Date(),
-    recipe.needsReview ? "TRUE" : "FALSE"
+    recipe.needsReview ? "TRUE" : "FALSE",
+    servings
   ];
 
   if (isNew) {

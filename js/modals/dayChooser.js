@@ -1,6 +1,7 @@
 // ==========================================
 // Day Chooser Modal (used after a Tinder swipe or "plan this")
 // ==========================================
+import { state } from '../state.js';
 import { elements } from '../dom.js';
 import { getWeekDayName, showNotification } from '../utils.js';
 import { updateWeeklyPlanInState } from '../views/dashboard.js';
@@ -25,7 +26,7 @@ export function openDayChooser(recipe) {
       const dayIdx = parseInt(newBtn.dataset.dayIdx);
       elements.modalDayChooser.classList.add('hidden');
 
-      await updateWeeklyPlanInState(dayIdx, recipe.id, recipe.title);
+      await updateWeeklyPlanInState(dayIdx, recipe.id, recipe.title, state.defaultServings);
       showNotification(`Matplan uppdaterad! ${recipe.title} på ${getWeekDayName(dayIdx)}.`, 'success');
     });
   });

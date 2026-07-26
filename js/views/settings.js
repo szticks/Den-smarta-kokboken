@@ -1,11 +1,12 @@
 // ==========================================
 // Settings Logic
 // ==========================================
-import { state } from '../state.js';
+import { state, DEFAULT_SERVINGS } from '../state.js';
 import { elements } from '../dom.js';
 import { callApi, fetchData } from '../api.js';
 import { showNotification } from '../utils.js';
 import { renderShoppingList, updateShoppingBadge } from './shopping.js';
+import { renderDashboard } from './dashboard.js';
 import { signInWithGoogle, signOutFromGoogle, isSignedIn, getSignedInEmail } from '../googleAuth.js';
 
 export function initSettingsView() {
@@ -90,6 +91,17 @@ export function initSettingsView() {
     } catch (err) {
       showConnectionMsg(`Kopplingen misslyckades: ${err.message}`, 'error');
     }
+  });
+
+  // Default household serving size save
+  elements.btnSaveDefaultServings.addEventListener('click', () => {
+    const value = parseInt(elements.settingsDefaultServings.value, 10);
+    state.defaultServings = value > 0 ? value : DEFAULT_SERVINGS;
+    elements.settingsDefaultServings.value = state.defaultServings;
+    localStorage.setItem('smarta_kokboken_default_servings', String(state.defaultServings));
+
+    showNotification('Standardantal portioner sparat!', 'success');
+    renderDashboard();
   });
 
   // Baseline list save

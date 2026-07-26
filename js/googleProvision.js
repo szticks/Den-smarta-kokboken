@@ -160,10 +160,10 @@ async function setUpInitialSheetData(accessToken, spreadsheetId, authorizedEmail
       valueInputOption: 'RAW',
       data: [
         { range: 'Settings!A1:B3', values: [['API_KEY', legacyApiKey], ['VERSION', '1.3'], ['AUTHORIZED_EMAIL', authorizedEmail]] },
-        { range: 'Recipes!A1:I1', values: [['id', 'title', 'ingredients', 'instructions', 'tags', 'url', 'image', 'created_at', 'needs_review']] },
+        { range: 'Recipes!A1:J1', values: [['id', 'title', 'ingredients', 'instructions', 'tags', 'url', 'image', 'created_at', 'needs_review', 'servings']] },
         {
-          range: 'WeeklyPlan!A1:D8',
-          values: [['day_index', 'day_name', 'recipe_id', 'recipe_title'], ...days.map((d, i) => [i, d, '', ''])]
+          range: 'WeeklyPlan!A1:E8',
+          values: [['day_index', 'day_name', 'recipe_id', 'recipe_title', 'servings'], ...days.map((d, i) => [i, d, '', '', ''])]
         },
         { range: 'PantryFlags!A1:C1', values: [['item_name', 'flagged_for_purchase', 'updated_at']] },
         { range: 'ShoppingListState!A1:C1', values: [['item_name', 'checked', 'quantity_text']] },

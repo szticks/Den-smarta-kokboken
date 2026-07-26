@@ -70,6 +70,8 @@ export function initElements() {
   elements.connectionStatusMsg = document.getElementById('connection-status-msg');
   elements.settingsBaseline = document.getElementById('settings-baseline-items');
   elements.btnSaveBaseline = document.getElementById('btn-save-baseline');
+  elements.settingsDefaultServings = document.getElementById('settings-default-servings');
+  elements.btnSaveDefaultServings = document.getElementById('btn-save-default-servings');
   elements.btnOpenSetupWizard = document.getElementById('btn-open-setup-wizard');
 
   // Modals
@@ -84,6 +86,9 @@ export function initElements() {
   elements.modalRecipeImage = document.getElementById('modal-recipe-image');
   elements.modalRecipeTags = document.getElementById('modal-recipe-tags');
   elements.modalRecipeIngredients = document.getElementById('modal-recipe-ingredients');
+  elements.modalRecipeServingsValue = document.getElementById('modal-recipe-servings-value');
+  elements.btnServingsDecrease = document.getElementById('btn-servings-decrease');
+  elements.btnServingsIncrease = document.getElementById('btn-servings-increase');
   elements.modalRecipeInstructions = document.getElementById('modal-recipe-instructions');
   elements.modalRecipeUrl = document.getElementById('modal-recipe-url');
   elements.modalRecipeUrlWrapper = document.getElementById('modal-recipe-url-wrapper');
@@ -100,6 +105,7 @@ export function initElements() {
   elements.recipeEditorForm = document.getElementById('recipe-editor-form');
   elements.recipeFormId = document.getElementById('recipe-id');
   elements.recipeFormTitle = document.getElementById('recipe-title');
+  elements.recipeFormServings = document.getElementById('recipe-servings');
   elements.recipeFormImage = document.getElementById('recipe-image-url');
   elements.recipeFormIngredients = document.getElementById('recipe-ingredients-text');
   elements.recipeFormInstructions = document.getElementById('recipe-instructions-text');

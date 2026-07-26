@@ -4,7 +4,7 @@
 // Computes a fresh candidate list from the current weekly plan and lets the
 // user uncheck anything they already have before committing it as the
 // active shopping list (see views/shopping.js) - deliberate, not automatic.
-import { state } from '../state.js';
+import { state, DEFAULT_SERVINGS } from '../state.js';
 import { elements } from '../dom.js';
 import { callApi } from '../api.js';
 import { escapeHtml, parseAmountVal, roundAmount, showNotification } from '../utils.js';
@@ -62,11 +62,18 @@ function buildCandidates() {
     const recipe = state.recipes.find(r => r.id === dayPlan.recipe_id);
     if (!recipe) return;
 
+    // Scale each ingredient from the recipe's base serving count to however
+    // many portions this specific day is planned for.
+    const dayServings = parseInt(dayPlan.servings, 10) || state.defaultServings;
+    const baseServings = recipe.servings || DEFAULT_SERVINGS;
+    const scale = dayServings / baseServings;
+
     recipe.ingredients.forEach(ing => {
       const name = ing.name.trim().toLowerCase();
       const unit = ing.unit ? ing.unit.trim().toLowerCase() : '';
       const key = `${name}_${unit}`;
-      const amountVal = parseAmountVal(ing.amount);
+      const parsedAmount = parseAmountVal(ing.amount);
+      const amountVal = parsedAmount !== null ? parsedAmount * scale : null;
       const isBaseline = state.baselineItems.includes(name);
 
       if (aggregated[key]) {
