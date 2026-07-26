@@ -1354,6 +1354,31 @@ input:checked + .slider::before {
   font-weight: 500;
 }
 
+#setup-wizard-intro,
+#setup-wizard-existing {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.setup-wizard-existing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.setup-wizard-existing-item {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+}
+
+.setup-wizard-existing-item small {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
 .setup-wizard-log {
   display: flex;
   flex-direction: column;

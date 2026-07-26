@@ -48,6 +48,10 @@ export function initElements() {
   elements.btnCloseSetupWizard = document.getElementById('btn-close-setup-wizard');
   elements.setupWizardIntro = document.getElementById('setup-wizard-intro');
   elements.btnStartProvisioning = document.getElementById('btn-start-provisioning');
+  elements.btnListExistingSheets = document.getElementById('btn-list-existing-sheets');
+  elements.setupWizardExisting = document.getElementById('setup-wizard-existing');
+  elements.setupWizardExistingList = document.getElementById('setup-wizard-existing-list');
+  elements.btnBackToIntro = document.getElementById('btn-back-to-intro');
   elements.setupWizardProgress = document.getElementById('setup-wizard-progress');
   elements.setupWizardLog = document.getElementById('setup-wizard-log');
   elements.setupWizardResult = document.getElementById('setup-wizard-result');

@@ -60,6 +60,39 @@ async function createSpreadsheet(accessToken, title) {
   return data.id;
 }
 
+// Marks a provisioned spreadsheet with private (app-only) metadata so it can
+// later be found again via listExistingSpreadsheets(), e.g. after the user
+// clears their browser data and loses the saved web app URL. Best-effort -
+// a failure here shouldn't undo an otherwise-successful provisioning run.
+async function tagSpreadsheetMetadata(accessToken, spreadsheetId, scriptId, webAppUrl) {
+  await apiFetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}`, accessToken, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      appProperties: { smartaKokboken: 'true', scriptId, webAppUrl }
+    })
+  });
+}
+
+// Finds spreadsheets this Google account has previously provisioned through
+// this app (tagged via tagSpreadsheetMetadata). Only sees files the app
+// itself created, per the drive.file scope - not the user's whole Drive.
+export async function listExistingSpreadsheets(accessToken) {
+  const params = new URLSearchParams({
+    q: "mimeType='application/vnd.google-apps.spreadsheet' and appProperties has { key='smartaKokboken' and value='true' } and trashed=false",
+    fields: 'files(id,name,createdTime,appProperties)',
+    orderBy: 'createdTime desc'
+  });
+  const data = await apiFetch(`https://www.googleapis.com/drive/v3/files?${params}`, accessToken);
+  return (data.files || [])
+    .map((file) => ({
+      id: file.id,
+      name: file.name,
+      createdTime: file.createdTime,
+      webAppUrl: file.appProperties && file.appProperties.webAppUrl
+    }))
+    .filter((sheet) => sheet.webAppUrl);
+}
+
 async function createBoundScript(accessToken, title, parentId) {
   const data = await apiFetch('https://script.googleapis.com/v1/projects', accessToken, {
     method: 'POST',
@@ -178,6 +211,10 @@ export async function provisionBackend(accessToken, email, onProgress) {
 
     onProgress('Driftsätter som webbapp...');
     const { webAppUrl } = await createDeployment(accessToken, scriptId);
+
+    await tagSpreadsheetMetadata(accessToken, spreadsheetId, scriptId, webAppUrl).catch((tagErr) => {
+      console.warn('Could not tag spreadsheet for later reconnection:', tagErr);
+    });
 
     return {
       spreadsheetUrl: `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`,
