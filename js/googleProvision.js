@@ -18,12 +18,20 @@ async function apiFetch(url, accessToken, options = {}) {
       ...(options.headers || {})
     }
   });
-  const data = await response.json();
+  // DELETE requests return an empty 204 body, which response.json() can't parse.
+  const text = await response.text();
+  const data = text ? JSON.parse(text) : {};
   if (!response.ok) {
     const message = (data.error && (data.error.message || data.error)) || `HTTP ${response.status}`;
     throw new Error(message);
   }
   return data;
+}
+
+// Deleting the spreadsheet also takes its bound Apps Script project with it,
+// since a container-bound script is stored as part of the spreadsheet file.
+async function deleteSpreadsheet(accessToken, spreadsheetId) {
+  await apiFetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}`, accessToken, { method: 'DELETE' });
 }
 
 // Fetches this app's own backend/*.js source straight from the origin it's
@@ -147,22 +155,32 @@ export async function provisionBackend(accessToken, email, onProgress) {
   onProgress('Skapar ditt Google Sheet...');
   const spreadsheetId = await createSpreadsheet(accessToken, 'Smarta Kokboken');
 
-  onProgress('Fyller i grundstrukturen i arket...');
-  const legacyApiKey = generateLegacyKey();
-  await setUpInitialSheetData(accessToken, spreadsheetId, email, legacyApiKey);
+  try {
+    onProgress('Fyller i grundstrukturen i arket...');
+    const legacyApiKey = generateLegacyKey();
+    await setUpInitialSheetData(accessToken, spreadsheetId, email, legacyApiKey);
 
-  onProgress('Skapar Apps Script-projektet...');
-  const scriptId = await createBoundScript(accessToken, 'Smarta Kokboken Engine', spreadsheetId);
+    onProgress('Skapar Apps Script-projektet...');
+    const scriptId = await createBoundScript(accessToken, 'Smarta Kokboken Engine', spreadsheetId);
 
-  onProgress('Laddar upp backend-koden...');
-  await pushBackendFiles(accessToken, scriptId, files);
+    onProgress('Laddar upp backend-koden...');
+    await pushBackendFiles(accessToken, scriptId, files);
 
-  onProgress('Driftsätter som webbapp...');
-  const { webAppUrl } = await createDeployment(accessToken, scriptId);
+    onProgress('Driftsätter som webbapp...');
+    const { webAppUrl } = await createDeployment(accessToken, scriptId);
 
-  return {
-    spreadsheetUrl: `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`,
-    scriptEditorUrl: `https://script.google.com/d/${scriptId}/edit`,
-    webAppUrl
-  };
+    return {
+      spreadsheetUrl: `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`,
+      scriptEditorUrl: `https://script.google.com/d/${scriptId}/edit`,
+      webAppUrl
+    };
+  } catch (err) {
+    // Avoid leaving an orphaned half-set-up Sheet behind on failure - clean up
+    // and let the user retry from a blank slate instead of piling up duplicates.
+    onProgress('Något gick fel - städar upp det påbörjade arket...', true);
+    await deleteSpreadsheet(accessToken, spreadsheetId).catch((cleanupErr) => {
+      console.error('Cleanup failed:', cleanupErr);
+    });
+    throw err;
+  }
 }
