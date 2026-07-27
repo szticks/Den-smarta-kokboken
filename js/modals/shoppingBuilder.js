@@ -7,7 +7,7 @@
 import { state, DEFAULT_SERVINGS } from '../state.js';
 import { elements } from '../dom.js';
 import { callApi } from '../api.js';
-import { escapeHtml, parseAmountVal, roundAmount, showNotification } from '../utils.js';
+import { escapeHtml, parseAmountVal, roundAmount, showNotification, toggleBaselineItem } from '../utils.js';
 import { renderShoppingList, updateShoppingBadge } from '../views/shopping.js';
 
 // { key: { name, amount, unit, isBaseline, needsReview, included } }
@@ -39,25 +39,6 @@ export function initShoppingBuilderModal() {
       console.error('Failed to sync generated shopping list:', err);
     }
   });
-}
-
-// Adds/removes an item from the personal baseline list (see state.baselineItems)
-// straight from the builder, instead of the old raw comma-separated text box in
-// Inställningar - the list is meant to grow organically from actual shopping.
-function toggleBaseline(item) {
-  const name = item.name.trim().toLowerCase();
-
-  if (item.isBaseline) {
-    state.baselineItems = state.baselineItems.filter(i => i !== name);
-    item.isBaseline = false;
-  } else {
-    state.baselineItems = [...state.baselineItems, name];
-    item.isBaseline = true;
-    showNotification(`"${item.name}" markerad som basvara - döljs som standard i framtida inköpslistor.`, 'success');
-  }
-
-  localStorage.setItem('smarta_kokboken_baseline', state.baselineItems.join(','));
-  elements.settingsBaseline.value = state.baselineItems.join(', ');
 }
 
 function quantityTextFor(item) {
@@ -171,7 +152,10 @@ function renderBuilderList() {
 
     card.querySelector('.btn-baseline-toggle').addEventListener('click', (e) => {
       e.stopPropagation();
-      toggleBaseline(item);
+      item.isBaseline = toggleBaselineItem(item.name);
+      if (item.isBaseline) {
+        showNotification(`"${item.name}" markerad som basvara - döljs som standard i framtida inköpslistor.`, 'success');
+      }
       renderBuilderList();
     });
 

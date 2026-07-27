@@ -4,18 +4,20 @@
 import { state } from '../state.js';
 import { elements } from '../dom.js';
 import { callApi } from '../api.js';
-import { escapeHtml, showNotification } from '../utils.js';
+import { escapeHtml, showNotification, toggleBaselineItem } from '../utils.js';
 
 // Combines the deliberately-built shopping list (see modals/shoppingBuilder.js)
 // with any pantry items flagged "slut i skafferiet" since it was built - those
 // show up immediately rather than waiting for the next rebuild.
 function getDisplayItems() {
   const items = state.shoppingListItems.map(item => {
-    const isPantryOut = state.pantryFlags.includes(item.name.trim().toLowerCase());
+    const name = item.name.trim().toLowerCase();
+    const isPantryOut = state.pantryFlags.includes(name);
     return {
       name: item.name,
       quantityText: isPantryOut ? 'SLUT!' : item.quantityText,
-      isPantryOut
+      isPantryOut,
+      isBaseline: state.baselineItems.includes(name)
     };
   });
 
@@ -23,7 +25,7 @@ function getDisplayItems() {
     const name = itemName.trim().toLowerCase();
     const alreadyIncluded = items.some(item => item.name.toLowerCase() === name);
     if (!alreadyIncluded) {
-      items.push({ name: itemName.trim(), quantityText: 'SLUT!', isPantryOut: true });
+      items.push({ name: itemName.trim(), quantityText: 'SLUT!', isPantryOut: true, isBaseline: state.baselineItems.includes(name) });
     }
   });
 
@@ -75,10 +77,13 @@ export function renderShoppingList() {
       </div>
       <div class="shopping-item-right">
         ${qtyHtml}
+        <button type="button" class="btn-baseline-toggle ${item.isBaseline ? 'active' : ''}" title="${item.isBaseline ? 'Basvara - klicka för att ta bort från basvarulistan' : 'Markera som basvara (döljs som standard i framtida listor)'}">
+          <i data-lucide="pin"></i>
+        </button>
       </div>
     `;
 
-    card.addEventListener('click', async () => {
+    card.querySelector('.shopping-item-left').addEventListener('click', async () => {
       const newChecked = !isChecked;
       const lowerName = item.name.toLowerCase();
 
@@ -102,6 +107,15 @@ export function renderShoppingList() {
       } catch (err) {
         console.error('Failed to sync shopping item state:', err);
       }
+    });
+
+    card.querySelector('.btn-baseline-toggle').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const nowBaseline = toggleBaselineItem(item.name);
+      if (nowBaseline) {
+        showNotification(`"${item.name}" markerad som basvara - döljs som standard i framtida inköpslistor.`, 'success');
+      }
+      renderShoppingList();
     });
 
     elements.shoppingListWrapper.appendChild(card);

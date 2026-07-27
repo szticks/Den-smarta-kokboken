@@ -1,6 +1,27 @@
 // ==========================================
 // Helpers & Utilities
 // ==========================================
+import { state } from './state.js';
+import { elements } from './dom.js';
+
+// Adds/removes an ingredient from the personal baseline list (state.baselineItems),
+// shared by the shopping list builder and the everyday shopping list view so both
+// can offer the same "mark as basvara" pin. Returns the item's new baseline state.
+export function toggleBaselineItem(rawName) {
+  const name = rawName.trim().toLowerCase();
+  const isBaseline = state.baselineItems.includes(name);
+
+  if (isBaseline) {
+    state.baselineItems = state.baselineItems.filter(i => i !== name);
+  } else {
+    state.baselineItems = [...state.baselineItems, name];
+  }
+
+  localStorage.setItem('smarta_kokboken_baseline', state.baselineItems.join(','));
+  elements.settingsBaseline.value = state.baselineItems.join(', ');
+
+  return !isBaseline;
+}
 
 // Round to max 2 decimals, clean trailing zeros
 export function roundAmount(val) {
