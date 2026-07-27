@@ -41,6 +41,25 @@ export function initShoppingBuilderModal() {
   });
 }
 
+// Adds/removes an item from the personal baseline list (see state.baselineItems)
+// straight from the builder, instead of the old raw comma-separated text box in
+// Inställningar - the list is meant to grow organically from actual shopping.
+function toggleBaseline(item) {
+  const name = item.name.trim().toLowerCase();
+
+  if (item.isBaseline) {
+    state.baselineItems = state.baselineItems.filter(i => i !== name);
+    item.isBaseline = false;
+  } else {
+    state.baselineItems = [...state.baselineItems, name];
+    item.isBaseline = true;
+    showNotification(`"${item.name}" markerad som basvara - döljs som standard i framtida inköpslistor.`, 'success');
+  }
+
+  localStorage.setItem('smarta_kokboken_baseline', state.baselineItems.join(','));
+  elements.settingsBaseline.value = state.baselineItems.join(', ');
+}
+
 function quantityTextFor(item) {
   if (item.amount) return `${roundAmount(item.amount)} ${item.unit}`.trim();
   return item.unit || '';
@@ -139,12 +158,21 @@ function renderBuilderList() {
       </div>
       <div class="shopping-item-right">
         ${qtyHtml}
+        <button type="button" class="btn-baseline-toggle ${item.isBaseline ? 'active' : ''}" title="${item.isBaseline ? 'Basvara - klicka för att ta bort från basvarulistan' : 'Markera som basvara (döljs som standard i framtida listor)'}">
+          <i data-lucide="pin"></i>
+        </button>
       </div>
     `;
 
-    card.addEventListener('click', () => {
+    card.querySelector('.shopping-item-left').addEventListener('click', () => {
       item.included = !item.included;
       card.classList.toggle('checked', item.included);
+    });
+
+    card.querySelector('.btn-baseline-toggle').addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleBaseline(item);
+      renderBuilderList();
     });
 
     elements.shoppingBuilderList.appendChild(card);

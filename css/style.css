@@ -1216,6 +1216,12 @@ input:checked + .slider::before {
   text-decoration: line-through;
 }
 
+.shopping-item-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .shopping-item-quantity {
   font-family: var(--font-heading);
   font-size: 0.85rem;
@@ -1229,6 +1235,29 @@ input:checked + .slider::before {
 .shopping-item.checked .shopping-item-quantity {
   color: var(--text-muted);
   background: rgba(255, 255, 255, 0.02);
+}
+
+.btn-baseline-toggle {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.btn-baseline-toggle i {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-baseline-toggle:hover {
+  color: var(--text-secondary);
+}
+
+.btn-baseline-toggle.active {
+  color: var(--color-accent-orange);
 }
 
 .shopping-item.is-baseline {
